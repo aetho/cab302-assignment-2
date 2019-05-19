@@ -12,13 +12,13 @@ import java.util.Map;
 public class VecGUI extends JFrame implements Observer {
 
     private JPanel toolsPanel = new JPanel();                       // toolbar container panel
-    private Map<String, JButton> btnTools = new HashMap<>();    // Tool buttons (plot, line, etc...)
+    private Map<String, JButton> btnTools = new HashMap<>();        // Tool buttons (plot, line, etc...)
 
-    private JPanel palettePanel = new JPanel();                 // Colour palette container
-    private Map<Color, JButton> palette = new HashMap<>();      // Colour palette buttons
+    private JPanel palettePanel = new JPanel();                     // Colour palette container
+    private Map<Color, JButton> btnPalette = new HashMap<>();       // Colour palette buttons
 
     private JTabbedPane tabs = new JTabbedPane();   // Opened files tabbed pane
-    private JPanel canvasPanel = new JPanel();           // canvas container panel
+    private JPanel canvasPanel = new JPanel();      // canvas container panel
     private JPanel canvas = new JPanel();           // canvas panel
 
     private JPanel pickPanel = new JPanel();    // Colour picker container panel
@@ -31,7 +31,7 @@ public class VecGUI extends JFrame implements Observer {
     }
 
     public Map<Color, JButton> getPaletteButtons(){
-        return palette;
+        return btnPalette;
     }
 
     public JButton getPickPenButton(){
@@ -72,7 +72,6 @@ public class VecGUI extends JFrame implements Observer {
      * Adds the toolbar main GUI.
      */
     public void addToolBar(){
-        // [Todo] Attach event handlers to buttons
         toolsPanel.setPreferredSize(new Dimension(124,-1));
         toolsPanel.setBackground(Utility.GREY900);
 
@@ -92,7 +91,7 @@ public class VecGUI extends JFrame implements Observer {
     }
 
     /**
-     * Adds colour palette to toolbar
+     * Adds colour btnPalette to toolbar
      */
     public void addColorPalette(){
         palettePanel.setLayout(new GridLayout(4,4));
@@ -106,7 +105,7 @@ public class VecGUI extends JFrame implements Observer {
             btn.setBackground(c);
 
             palettePanel.add(btn);
-            palette.put(c, btn);
+            btnPalette.put(c, btn);
         }
 
         // Add colour panel to toolbar
@@ -184,15 +183,32 @@ public class VecGUI extends JFrame implements Observer {
     }
 
     public void addColorListeners(MouseListener l){
-        for(Color c : palette.keySet()){
-            palette.get(c).addMouseListener(l);
+        for(Color c : btnPalette.keySet()){
+            btnPalette.get(c).addMouseListener(l);
+        }
+    }
+
+    public void addToolListeners(MouseListener l){
+        for(String tool : btnTools.keySet()){
+            btnTools.get(tool).addMouseListener(l);
         }
     }
 
     @Override
     public void update(Subject s){
         VecModel model = (VecModel)(s);
+
+        // Update pen/fill color preview
         btnPickPen.setBackground(model.getPenColor());
         btnPickFill.setBackground(model.getFillColor());
+
+        // Update tool buttons
+        for(String key : btnTools.keySet()){
+            if(key == model.getCurrentTool().getName()){
+                btnTools.get(key).setBackground(Utility.GREY800);
+            }else{
+                btnTools.get(key).setBackground(Utility.GREY600);
+            }
+        }
     }
 }

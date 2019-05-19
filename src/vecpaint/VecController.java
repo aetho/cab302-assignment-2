@@ -12,22 +12,39 @@ public class VecController {
         this.model = model;
         this.view = gui;
 
-        gui.addColorListeners(new ColorListener());
+        view.addColorListeners(new ColorListener());
+        view.addToolListeners(new ToolListener());
         model.attach(gui);
 
         // Initial notification to GUI to update necessary components
         model.notifyObservers();
     }
 
-
-    private class ColorListener extends MouseAdapter{
+    private class ColorListener extends MouseAdapter {
         public void mousePressed(MouseEvent e){
-            Component src = (Component)(e.getSource());
-            if(SwingUtilities.isLeftMouseButton(e)){
-                model.setPenColor(src.getBackground());
-            }else if(SwingUtilities.isRightMouseButton(e)){
-                model.setFillColor(src.getBackground());
+            Object src = e.getSource();
+            if(src instanceof JButton){
+                JButton btn = (JButton)src;
+                if(SwingUtilities.isLeftMouseButton(e)){
+                    model.setPenColor(btn.getBackground());
+                }else if(SwingUtilities.isRightMouseButton(e)){
+                    model.setFillColor(btn.getBackground());
+                }
             }
         }
     }
+
+    private class ToolListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e){
+            Object src = e.getSource();
+            if(src instanceof JButton){
+                JButton btn = (JButton)src;
+                if(SwingUtilities.isLeftMouseButton(e)){
+                    String btnString = btn.getText().toUpperCase();
+                    model.setCurrentTool(Tool.valueOf(btnString));
+                }
+            }
+        }
+    }
+
 }

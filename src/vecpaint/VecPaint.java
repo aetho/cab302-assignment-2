@@ -14,7 +14,6 @@ public class VecPaint {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-                    // Create gui and initialize it base on model
                     gui.createMainGUI();
                 }
             });
