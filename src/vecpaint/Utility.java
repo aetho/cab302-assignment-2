@@ -28,4 +28,8 @@ public class Utility {
     public static final Color ORANGE        = Color.decode("#FFA726");
     public static final Color DEEPORANGE    = Color.decode("#FF7043");
 
+    public static final Color PALETTECOLORS[] = {
+            RED, PINK, PURPLE, DEEPPURPLE, INDIGO, BLUE, LIGHTBLUE, CYAN,
+            TEAL, GREEN, LIGHTGREEN, LIME, YELLOW, AMBER, ORANGE, DEEPORANGE
+    };
 }
