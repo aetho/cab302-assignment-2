@@ -1,11 +1,14 @@
 package vecpaint;
 
+import observerpattern.Observer;
+import observerpattern.Subject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VecGUI extends JFrame{
+public class VecGUI extends JFrame implements Observer {
 
     private JPanel tPanel = new JPanel();                       // toolbar container panel
     private Map<String, JButton> btnTools = new HashMap<>();    // Tool buttons (plot, line, etc...)
@@ -22,6 +25,29 @@ public class VecGUI extends JFrame{
     private JLabel lblPen, lblFill;             // Labels for Pen/Fill
 
 
+    public Map<String, JButton> getToolButtons(){
+        return btnTools;
+    }
+
+    public Map<Color, JButton> getPaletteButtons(){
+        return btnColors;
+    }
+
+    public JButton getPickPenButton(){
+        return btnPickPen;
+    }
+
+    public JButton getPickFillButton(){
+        return btnPickFill;
+    }
+
+    public JTabbedPane getTabs(){
+        return tabs;
+    }
+
+    public JPanel getCanvas(){
+        return canvas;
+    }
 
     /**
      * Creates the main GUI of the program
@@ -175,5 +201,10 @@ public class VecGUI extends JFrame{
 
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
+    }
+
+    @Override
+    public void update(Subject s){
+
     }
 }

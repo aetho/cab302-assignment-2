@@ -1,5 +1,7 @@
 package vecpaint;
 
-public class VecModel {
+import observerpattern.Subject;
+
+public class VecModel extends Subject {
     public VecModel(){}
 }
