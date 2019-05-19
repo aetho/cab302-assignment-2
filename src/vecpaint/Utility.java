@@ -3,7 +3,7 @@ package vecpaint;
 import java.awt.*;
 
 /**
- * A Helper class to keep track of common variables used
+ * A Helper class to keep track of common values used
  */
 public class Utility {
     public static final Color GREY600 = Color.decode("#757575");

@@ -1,11 +1,9 @@
 package vecpaint;
 
-import observerpattern.Observer;
-import observerpattern.Subject;
+import observerpattern.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +58,7 @@ public class VecGUI extends JFrame implements Observer {
         setSize(800,740);
         setMinimumSize(new Dimension(800,740));
         setLayout(new BorderLayout());
+        setLocationRelativeTo(null);
 
         addMenu();
         addToolBar();
@@ -80,6 +79,7 @@ public class VecGUI extends JFrame implements Observer {
             JButton btn = new JButton(tool.getName());
             btn.setPreferredSize(new Dimension(96, 24));
             btn.setBorderPainted(false);
+            btn.setOpaque(true);
             btn.setBackground(Utility.GREY600);
             btn.setForeground(Color.WHITE);
 
@@ -180,18 +180,6 @@ public class VecGUI extends JFrame implements Observer {
 
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
-    }
-
-    public void addColorListeners(MouseListener l){
-        for(Color c : btnPalette.keySet()){
-            btnPalette.get(c).addMouseListener(l);
-        }
-    }
-
-    public void addToolListeners(MouseListener l){
-        for(String tool : btnTools.keySet()){
-            btnTools.get(tool).addMouseListener(l);
-        }
     }
 
     @Override
