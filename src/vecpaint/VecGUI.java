@@ -5,7 +5,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainGUI extends JFrame implements Runnable {
+public class VecGUI extends JFrame{
 
     private JPanel tPanel = new JPanel();                       // toolbar container panel
     private Map<String, JButton> btnTools = new HashMap<>();    // Tool buttons (plot, line, etc...)
@@ -29,7 +29,7 @@ public class MainGUI extends JFrame implements Runnable {
     public void createMainGUI(){
         // Basic initialization of frame
         setTitle("vecPaint - A graphical VEC file editor");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
         setSize(800,740);
         setMinimumSize(new Dimension(800,740));
         setLayout(new BorderLayout());
@@ -39,9 +39,6 @@ public class MainGUI extends JFrame implements Runnable {
         addColorPalette();
         addContentPanel();
         addColorPicker();
-
-        // Show frame
-        setVisible(true);
     }
 
     /**
@@ -178,13 +175,5 @@ public class MainGUI extends JFrame implements Runnable {
 
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
-    }
-
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(new MainGUI());
-    }
-
-    public void run(){
-        createMainGUI();
     }
 }
