@@ -35,8 +35,24 @@ public class VecModel extends Subject {
         notifyObservers();
     }
 
+    public void newFile(){
+        openedFiles.add(new VecFile(null));
+    }
+
     public void openFile(File file){
         openedFiles.add(new VecFile(file));
+        notifyObservers();
+    }
+
+    public void saveFile(File file, int fileIndex){
+        String filePath = file.getAbsolutePath();
+        String fileName = file.getName();
+
+        openedFiles.get(fileIndex).setFilePath(filePath);
+        openedFiles.get(fileIndex).setFileName(fileName);
+        openedFiles.get(fileIndex).setModified(false);
+        openedFiles.get(fileIndex).saveFile();
+
         notifyObservers();
     }
 

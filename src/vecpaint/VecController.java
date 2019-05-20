@@ -121,22 +121,31 @@ public class VecController {
             Object src = e.getSource();
             if(src instanceof JMenuItem){
                 if(src == view.getNewFileItem()){
-                    model.openFile(null);
+                    model.newFile();
                 }else if(src == view.getOpenFileItem()) {
                     JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
                     jfc.setDialogTitle("Select a VEC file");
                     jfc.setAcceptAllFileFilterUsed(false);
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter("VEC files", "vec");
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("VEC file", "vec");
                     jfc.addChoosableFileFilter(filter);
 
-                    // Open file and pass it to the model
+                    // Choose file and pass it to the model to open
                     int returnValue = jfc.showOpenDialog(null);
                     if(returnValue == JFileChooser.APPROVE_OPTION){
                         model.openFile(jfc.getSelectedFile());
                     }
                 }else if(src == view.getSaveFileItem()){
-                    // Save file
-                    System.out.println("Saving file");
+                    JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                    jfc.setDialogTitle("Choose save folder");
+                    jfc.setAcceptAllFileFilterUsed(false);
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("VEC file", "vec");
+                    jfc.addChoosableFileFilter(filter);
+
+                    // Choose file and past it to the model to save
+                    int returnValue= jfc.showSaveDialog(null);
+                    if(returnValue == JFileChooser.APPROVE_OPTION){
+                        model.saveFile(jfc.getSelectedFile(), view.getTabs().getSelectedIndex());
+                    }
                 }else if(src == view.getCloseFileItem()){
                     // Close file
                     JTabbedPane tabs = view.getTabs();
