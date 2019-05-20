@@ -16,12 +16,12 @@ public class VecModel extends Subject {
     }
 
     public void setPenColor(Color color){
-        this.penColor = color;
+        penColor = color;
         notifyObservers();
     }
 
     public void setFillColor(Color color){
-        this.fillColor = color;
+        fillColor = color;
         notifyObservers();
     }
 

@@ -1,8 +1,6 @@
 package vecpaint;
 
 import javax.swing.*;
-import java.awt.*;
-
 
 public class VecPaint {
     public static void main(String[] args){

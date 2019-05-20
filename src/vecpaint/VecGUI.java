@@ -8,12 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VecGUI extends JFrame implements Observer {
-
-    private JPanel toolsPanel = new JPanel();                       // toolbar container panel
-    private Map<String, JButton> btnTools = new HashMap<>();        // Tool buttons (plot, line, etc...)
-
-    private JPanel palettePanel = new JPanel();                     // Colour palette container
-    private Map<Color, JButton> btnPalette = new HashMap<>();       // Colour palette buttons
+    private JPanel toolsPanel = new JPanel();                   // toolbar container panel
+    private Map<String, JButton> btnTools = new HashMap<>();    // Tool buttons (plot, line, etc...)
+    private Map<Color, JButton> btnPalette = new HashMap<>();   // Colour palette buttons
 
     private JTabbedPane tabs = new JTabbedPane();   // Opened files tabbed pane
     private JPanel canvasPanel = new JPanel();      // canvas container panel
@@ -23,6 +20,10 @@ public class VecGUI extends JFrame implements Observer {
     private JButton btnPickPen, btnPickFill;    // Button for picking pen/fill colour
     private JLabel lblPen, lblFill;             // Labels for Pen/Fill
 
+    private JMenuItem openFileItem;
+    private JMenuItem saveFileItem;
+    private JMenuItem closeFileItem;
+    private JMenuItem closeAllFilesItem;
 
     public Map<String, JButton> getToolButtons(){
         return btnTools;
@@ -47,6 +48,23 @@ public class VecGUI extends JFrame implements Observer {
     public JPanel getCanvas(){
         return canvas;
     }
+
+    public JMenuItem getOpenFileItem(){
+        return openFileItem;
+    }
+
+    public JMenuItem getSaveFileItem(){
+        return saveFileItem;
+    }
+
+    public JMenuItem getCloseFileItem(){
+        return closeFileItem;
+    }
+
+    public JMenuItem getCloseAllFilesItem(){
+        return closeAllFilesItem;
+    }
+
 
     /**
      * Creates the main GUI of the program
@@ -94,6 +112,7 @@ public class VecGUI extends JFrame implements Observer {
      * Adds colour btnPalette to toolbar
      */
     public void addColorPalette(){
+        JPanel palettePanel = new JPanel(); // Colour palette container
         palettePanel.setLayout(new GridLayout(4,4));
         palettePanel.setPreferredSize(new Dimension(96,96));
 
@@ -116,7 +135,6 @@ public class VecGUI extends JFrame implements Observer {
      * Adds colour picker to toolbar
      */
     public void addColorPicker(){
-        // [Todo] Attach event handlers to buttons
         pickPanel.setLayout(new GridLayout(2,2, 4, 0));
         pickPanel.setPreferredSize(new Dimension(96,48));
         pickPanel.setBackground(Utility.GREY900);
@@ -165,18 +183,19 @@ public class VecGUI extends JFrame implements Observer {
      * Adds the menu to main frame.
      */
     public void addMenu(){
-        JMenuBar menuBar = new JMenuBar();
+       JMenuBar menuBar = new JMenuBar();
+
         JMenu fileMenu = new JMenu("File");
 
-        JMenuItem openFile = new JMenuItem("Open");
-        JMenuItem saveFile = new JMenuItem("Save");
-        JMenuItem closeFile = new JMenuItem("Close");
-        JMenuItem closeAllFiles = new JMenuItem("Close all");
+        openFileItem = new JMenuItem("Open");
+        saveFileItem = new JMenuItem("Save");
+        closeFileItem = new JMenuItem("Close");
+        closeAllFilesItem = new JMenuItem("Close all");
 
-        fileMenu.add(openFile);
-        fileMenu.add(saveFile);
-        fileMenu.add(closeFile);
-        fileMenu.add(closeAllFiles);
+        fileMenu.add(openFileItem);
+        fileMenu.add(saveFileItem);
+        fileMenu.add(closeFileItem);
+        fileMenu.add(closeAllFilesItem);
 
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
