@@ -1,6 +1,8 @@
 package vecpaint;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
@@ -118,18 +120,36 @@ public class VecController {
         public void mousePressed(MouseEvent e){
             Object src = e.getSource();
             if(src instanceof JMenuItem){
-                if(src == view.getOpenFileItem()) {
+                if(src == view.getNewFileItem()){
+                    model.openFile(null);
+                }else if(src == view.getOpenFileItem()) {
+                    JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                    jfc.setDialogTitle("Select a VEC file");
+                    jfc.setAcceptAllFileFilterUsed(false);
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("VEC files", "vec");
+                    jfc.addChoosableFileFilter(filter);
+
                     // Open file and pass it to the model
-                    System.out.println("Opening file");
+                    int returnValue = jfc.showOpenDialog(null);
+                    if(returnValue == JFileChooser.APPROVE_OPTION){
+                        model.openFile(jfc.getSelectedFile());
+                    }
                 }else if(src == view.getSaveFileItem()){
                     // Save file
                     System.out.println("Saving file");
                 }else if(src == view.getCloseFileItem()){
                     // Close file
-                    System.out.println("Closing file");
+                    JTabbedPane tabs = view.getTabs();
+                    int selectedTab = tabs.getSelectedIndex();
+                    model.closeFile(selectedTab);
+
+                    // Select the index before the closed file.
+                    if(tabs.getTabCount() > 0){
+                        tabs.setSelectedIndex((selectedTab > 0) ? selectedTab-1 : 0);
+                    }
                 }else if(src == view.getCloseAllFilesItem()){
                     // Close all files
-                    System.out.println("Closing all files");
+                    model.closeAllFiles();
                 }
             }
         }

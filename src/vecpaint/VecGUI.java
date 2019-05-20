@@ -20,6 +20,7 @@ public class VecGUI extends JFrame implements Observer {
     private JButton btnPickPen, btnPickFill;    // Button for picking pen/fill colour
     private JLabel lblPen, lblFill;             // Labels for Pen/Fill
 
+    private JMenuItem newFileItem;
     private JMenuItem openFileItem;
     private JMenuItem saveFileItem;
     private JMenuItem closeFileItem;
@@ -47,6 +48,10 @@ public class VecGUI extends JFrame implements Observer {
 
     public JPanel getCanvas(){
         return canvas;
+    }
+
+    public JMenuItem getNewFileItem(){
+        return newFileItem;
     }
 
     public JMenuItem getOpenFileItem(){
@@ -187,11 +192,13 @@ public class VecGUI extends JFrame implements Observer {
 
         JMenu fileMenu = new JMenu("File");
 
+        newFileItem = new JMenuItem("New");
         openFileItem = new JMenuItem("Open");
         saveFileItem = new JMenuItem("Save");
         closeFileItem = new JMenuItem("Close");
         closeAllFilesItem = new JMenuItem("Close all");
 
+        fileMenu.add(newFileItem);
         fileMenu.add(openFileItem);
         fileMenu.add(saveFileItem);
         fileMenu.add(closeFileItem);
@@ -216,6 +223,20 @@ public class VecGUI extends JFrame implements Observer {
             }else{
                 btnTools.get(key).setBackground(Utility.GREY600);
             }
+        }
+
+        // Update panels
+        tabs.removeAll();
+        for(VecFile file : model.getOpenedFiles()){
+            JPanel canvasPanel =  new JPanel();
+            canvasPanel.setLayout(new GridBagLayout());
+            canvasPanel.setBackground(Utility.GREY800);
+
+            JPanel canvas = new JPanel();
+            canvas.setPreferredSize(new Dimension(640, 640));
+
+            canvasPanel.add(canvas);
+            tabs.add(file.getFileName(), canvasPanel);
         }
     }
 }
