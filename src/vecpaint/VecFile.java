@@ -22,6 +22,15 @@ public class VecFile {
 
         if(!filePath.toLowerCase().endsWith(".vec")) filePath += ".vec";
         if(!fileName.toLowerCase().endsWith(".vec")) fileName += ".vec";
+
+        BufferedReader br = getBuffer();
+        try {
+            String line;
+            while((line = br.readLine()) != null){
+                addContent(line);
+            }
+            br.close();
+        } catch (Exception e){}
     }
 
     public void setIndicatingTransparency(boolean indicateTransparency){
@@ -47,7 +56,11 @@ public class VecFile {
     }
 
     public void addContent(String line){
-        content += line + "\n";
+        if(content == null){
+            content = line + "\n";
+        }else{
+            content += line + "\n";
+        }
     }
 
     public void saveFile(){
@@ -70,7 +83,11 @@ public class VecFile {
         return (isModified) ? fileName+"*" : fileName;
     }
 
-    public BufferedReader getBuffer(){
+    public String getContent(){
+        return content;
+    }
+
+    private BufferedReader getBuffer(){
         if(filePath == null) return null;
         BufferedReader buffer = null;
         try {

@@ -57,9 +57,15 @@ public class VecModel extends Subject {
 
         openedFiles.get(fileIndex).setFilePath(filePath);
         openedFiles.get(fileIndex).setFileName(fileName);
-        openedFiles.get(fileIndex).setModified(false);
         openedFiles.get(fileIndex).saveFile();
+        openedFiles.get(fileIndex).setModified(false);
 
+        notifyObservers();
+    }
+
+    public void updateFile(int fileIndex, String update){
+        openedFiles.get(fileIndex).addContent(update);
+        openedFiles.get(fileIndex).setModified(true);
         notifyObservers();
     }
 
@@ -76,9 +82,29 @@ public class VecModel extends Subject {
     public Color getPenColor(){
         return penColor;
     }
+    public String getPenColorHexStr() {
+        if(penColor == null) return null;
+
+        int r = penColor.getRed();
+        int g = penColor.getGreen();
+        int b = penColor.getBlue();
+        int a = penColor.getAlpha();
+
+        return String.format("#%02X%02X%02X %02X", r, g, b, a);
+    }
 
     public Color getFillColor(){
         return fillColor;
+    }
+    public String getFillColorHexStr() {
+        if(penColor == null) return null;
+
+        int r = fillColor.getRed();
+        int g = fillColor.getGreen();
+        int b = fillColor.getBlue();
+        int a = fillColor.getAlpha();
+
+        return  String.format("#%02X%02X%02X %02X", r, g, b, a);
     }
 
     public Tool getCurrentTool(){

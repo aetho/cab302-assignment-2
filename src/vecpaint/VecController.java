@@ -1,13 +1,12 @@
 package vecpaint;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
+import customcomponent.Canvas;
 
 public class VecController {
     private VecModel model;
@@ -17,16 +16,18 @@ public class VecController {
         this.model = model;
         this.view = gui;
 
+        // Attach gui to model and send initial notification to GUI to update necessary components
+        model.attach(gui);
+        model.notifyObservers();
+
+        // Add listeners
         addFileMenuListener();
         addColorListener();
         addToolListener();
         addPickPenListener();
         addPickFillListener();
         addTransparencyListener();
-
-        // Attach gui to model and send initial notification to GUI to update necessary components
-        model.attach(gui);
-        model.notifyObservers();
+        addCanvasListener();
     }
 
     public void addColorListener(){
@@ -65,6 +66,17 @@ public class VecController {
     public void addTransparencyListener(){
         JButton trans = view.getTransparencyButton();
         trans.addActionListener(new TransparencyListener());
+    }
+
+    public void addCanvasListener(){
+        JTabbedPane tabs = view.getTabs();
+        int selected = tabs.getSelectedIndex();
+        Canvas currentCanvas = view.getCanvases().get(selected);
+
+        // Add line listener
+        currentCanvas.addMouseListener(new CanvasLineListener());
+        currentCanvas.addMouseMotionListener(new CanvasLineListener());
+
     }
 
     private class ColorListener extends MouseAdapter {
@@ -170,11 +182,14 @@ public class VecController {
         }
     }
 
-    private class TransparencyListener implements ActionListener{
+    private class TransparencyListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             JTabbedPane tabs = view.getTabs();
             model.toggleTransparency(tabs.getSelectedIndex());
         }
     }
 
+    private class CanvasLineListener extends MouseAdapter {
+
+    }
 }

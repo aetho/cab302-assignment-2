@@ -7,15 +7,18 @@ import observerpattern.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class VecGUI extends JFrame implements Observer {
     private JPanel toolsPanel = new JPanel();                   // toolbar container panel
     private Map<String, JButton> btnTools = new HashMap<>();    // Tool buttons (plot, line, etc...)
     private Map<Color, JButton> btnPalette = new HashMap<>();   // Colour palette buttons
 
-    private JTabbedPane tabs = new JTabbedPane();   // Opened files tabbed pane
+    private JTabbedPane tabs = new JTabbedPane();       // Opened files tabbed pane
+    private List<Canvas> canvases = new ArrayList<>();   // List of canvases
 
     private JButton btnTrans;   // transparency button
 
@@ -47,6 +50,10 @@ public class VecGUI extends JFrame implements Observer {
 
     public JTabbedPane getTabs(){
         return tabs;
+    }
+
+    public List<Canvas> getCanvases(){
+        return canvases;
     }
 
     public JButton getTransparencyButton(){
@@ -251,14 +258,17 @@ public class VecGUI extends JFrame implements Observer {
         int selected = tabs.getSelectedIndex();
 
         tabs.removeAll();
+        canvases.clear();
         for(VecFile file : model.getOpenedFiles()){
             JPanel canvasPanel =  new JPanel();
             canvasPanel.setLayout(new GridBagLayout());
             canvasPanel.setBackground(Utility.GREY700);
 
-            Canvas canvas = new Canvas(file);
+            Canvas canvas = new Canvas(file, model);
             canvas.setPreferredSize(new Dimension(640, 640));
 
+
+            canvases.add(canvas);
             canvasPanel.add(canvas);
             tabs.add(file.getFileName(), canvasPanel);
         }
