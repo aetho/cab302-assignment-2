@@ -4,6 +4,7 @@ import observerpattern.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +14,6 @@ public class VecGUI extends JFrame implements Observer {
     private Map<Color, JButton> btnPalette = new HashMap<>();   // Colour palette buttons
 
     private JTabbedPane tabs = new JTabbedPane();   // Opened files tabbed pane
-    private JPanel canvasPanel = new JPanel();      // canvas container panel
-    private JPanel canvas = new JPanel();           // canvas panel
 
     private JPanel pickPanel = new JPanel();    // Colour picker container panel
     private JButton btnPickPen, btnPickFill;    // Button for picking pen/fill colour
@@ -44,10 +43,6 @@ public class VecGUI extends JFrame implements Observer {
 
     public JTabbedPane getTabs(){
         return tabs;
-    }
-
-    public JPanel getCanvas(){
-        return canvas;
     }
 
     public JMenuItem getNewFileItem(){
@@ -82,11 +77,12 @@ public class VecGUI extends JFrame implements Observer {
         setMinimumSize(new Dimension(800,740));
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
+        getContentPane().setBackground(Utility.GREY800);
 
         addMenu();
         addToolBar();
         addColorPalette();
-        addContentPanel();
+        addTabs();
         addColorPicker();
     }
 
@@ -169,18 +165,9 @@ public class VecGUI extends JFrame implements Observer {
     /**
      * Adds the content panel to the main frame.
      */
-    public void addContentPanel(){
+    public void addTabs(){
         // Remove Tabbed pane insets
         UIManager.getInsets("TabbedPane.contentBorderInsets").set(-1,-1,-1,-1);
-
-        // set layout to Grid bag to center components inside
-        canvasPanel.setLayout(new GridBagLayout());
-        canvasPanel.setBackground(Utility.GREY800);
-
-        canvas.setPreferredSize(new Dimension(640, 640));
-
-        canvasPanel.add(canvas);
-        tabs.add("Untitled.vec", canvasPanel);
         add(tabs);
     }
 
@@ -197,6 +184,23 @@ public class VecGUI extends JFrame implements Observer {
         saveFileItem = new JMenuItem("Save");
         closeFileItem = new JMenuItem("Close");
         closeAllFilesItem = new JMenuItem("Close all");
+
+        newFileItem.setMnemonic(KeyEvent.VK_N);
+        KeyStroke ks = KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        newFileItem.setAccelerator(ks);
+
+        openFileItem.setMnemonic(KeyEvent.VK_O);
+        ks = KeyStroke.getKeyStroke('O', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        openFileItem.setAccelerator(ks);
+
+        saveFileItem.setMnemonic(KeyEvent.VK_S);
+        ks = KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        saveFileItem.setAccelerator(ks);
+
+        closeFileItem.setMnemonic(KeyEvent.VK_W);
+        ks = KeyStroke.getKeyStroke('W', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        closeFileItem.setAccelerator(ks);
+
 
         fileMenu.add(newFileItem);
         fileMenu.add(openFileItem);
@@ -230,7 +234,7 @@ public class VecGUI extends JFrame implements Observer {
         for(VecFile file : model.getOpenedFiles()){
             JPanel canvasPanel =  new JPanel();
             canvasPanel.setLayout(new GridBagLayout());
-            canvasPanel.setBackground(Utility.GREY800);
+            canvasPanel.setBackground(Utility.GREY700);
 
             JPanel canvas = new JPanel();
             canvas.setPreferredSize(new Dimension(640, 640));

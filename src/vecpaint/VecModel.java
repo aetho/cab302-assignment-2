@@ -37,6 +37,7 @@ public class VecModel extends Subject {
 
     public void newFile(){
         openedFiles.add(new VecFile(null));
+        notifyObservers();
     }
 
     public void openFile(File file){

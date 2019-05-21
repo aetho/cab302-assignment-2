@@ -15,7 +15,7 @@ public class VecController {
         this.model = model;
         this.view = gui;
 
-        addFileMenuListner();
+        addFileMenuListener();
         addColorListener();
         addToolListener();
         addPickPenListener();
@@ -36,7 +36,7 @@ public class VecController {
     public void addToolListener(){
         Map<String, JButton> toolButtons = view.getToolButtons();
         for(String tool : toolButtons.keySet()){
-            toolButtons.get(tool).addMouseListener(new ToolListener());
+            toolButtons.get(tool).addActionListener(new ToolListener());
         }
     }
 
@@ -50,12 +50,12 @@ public class VecController {
         pickFillButton.addMouseListener(new PickFillListener());
     }
 
-    public void addFileMenuListner(){
+    public void addFileMenuListener(){
         JMenuBar menuBar = view.getJMenuBar();
         JMenu fileMenu = menuBar.getMenu(0);
 
         for(int i = 0; i < fileMenu.getItemCount(); i++){
-            fileMenu.getItem(i).addMouseListener(new FileMenuListener());
+            fileMenu.getItem(i).addActionListener(new FileMenuListener());
         }
     }
 
@@ -73,15 +73,13 @@ public class VecController {
         }
     }
 
-    private class ToolListener extends MouseAdapter {
-        public void mousePressed(MouseEvent e){
+    private class ToolListener implements ActionListener {
+        public void actionPerformed (ActionEvent e){
             Object src = e.getSource();
             if(src instanceof JButton){
                 JButton btn = (JButton)src;
-                if(SwingUtilities.isLeftMouseButton(e)){
-                    String btnString = btn.getText().toUpperCase();
-                    model.setCurrentTool(Tool.valueOf(btnString));
-                }
+                String btnString = btn.getText().toUpperCase();
+                model.setCurrentTool(Tool.valueOf(btnString));
             }
         }
     }
@@ -116,8 +114,9 @@ public class VecController {
         }
     }
 
-    private class FileMenuListener extends MouseAdapter {
-        public void mousePressed(MouseEvent e){
+
+    private class FileMenuListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
             if(src instanceof JMenuItem){
                 if(src == view.getNewFileItem()){
