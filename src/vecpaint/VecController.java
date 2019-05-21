@@ -1,6 +1,8 @@
 package vecpaint;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
@@ -20,6 +22,7 @@ public class VecController {
         addToolListener();
         addPickPenListener();
         addPickFillListener();
+        addTransparencyListener();
 
         // Attach gui to model and send initial notification to GUI to update necessary components
         model.attach(gui);
@@ -57,6 +60,11 @@ public class VecController {
         for(int i = 0; i < fileMenu.getItemCount(); i++){
             fileMenu.getItem(i).addActionListener(new FileMenuListener());
         }
+    }
+
+    public void addTransparencyListener(){
+        JButton trans = view.getTransparencyButton();
+        trans.addActionListener(new TransparencyListener());
     }
 
     private class ColorListener extends MouseAdapter {
@@ -114,7 +122,6 @@ public class VecController {
         }
     }
 
-
     private class FileMenuListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
@@ -160,6 +167,13 @@ public class VecController {
                     model.closeAllFiles();
                 }
             }
+        }
+    }
+
+    private class TransparencyListener implements ActionListener{
+        public void actionPerformed(ActionEvent e) {
+            JTabbedPane tabs = view.getTabs();
+            model.toggleTransparency(tabs.getSelectedIndex());
         }
     }
 

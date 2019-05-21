@@ -35,6 +35,12 @@ public class VecModel extends Subject {
         notifyObservers();
     }
 
+    public void toggleTransparency(int fileIndex){
+        VecFile selectedFile = openedFiles.get(fileIndex);
+        selectedFile.setIndicatingTransparency(!selectedFile.isIndicatingTransparency());
+        notifyObservers();
+    }
+
     public void newFile(){
         openedFiles.add(new VecFile(null));
         notifyObservers();

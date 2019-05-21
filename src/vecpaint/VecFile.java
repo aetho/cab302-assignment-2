@@ -6,18 +6,30 @@ import java.io.FileReader;
 import java.io.FileWriter;
 
 public class VecFile {
+    private boolean indicatingTransparency;
     private boolean isModified;
     private String filePath;
     private String fileName;
     private String content;
 
+
     public VecFile(File file){
+        indicatingTransparency = false;
+        this.isModified = file == null;
+
         this.filePath = (file == null) ? "untitled.vec" : file.getAbsolutePath();
         this.fileName = (file == null) ? "untitled.vec" : file.getName();
-        this.isModified = file == null;
 
         if(!filePath.toLowerCase().endsWith(".vec")) filePath += ".vec";
         if(!fileName.toLowerCase().endsWith(".vec")) fileName += ".vec";
+    }
+
+    public void setIndicatingTransparency(boolean indicateTransparency){
+        indicatingTransparency = indicateTransparency;
+    }
+
+    public boolean isIndicatingTransparency(){
+        return indicatingTransparency;
     }
 
     public void setModified(boolean isModified){

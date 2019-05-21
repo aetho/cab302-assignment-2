@@ -17,7 +17,6 @@ public class VecPaint {
             });
         }catch(Exception e){}
 
-
         VecController controller = new VecController(model, gui);
 
         // exit on close and show GUI

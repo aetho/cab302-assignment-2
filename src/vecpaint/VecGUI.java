@@ -1,5 +1,7 @@
 package vecpaint;
 
+import customcomponent.BetterJButton;
+import customcomponent.Canvas;
 import observerpattern.*;
 
 import javax.swing.*;
@@ -14,6 +16,8 @@ public class VecGUI extends JFrame implements Observer {
     private Map<Color, JButton> btnPalette = new HashMap<>();   // Colour palette buttons
 
     private JTabbedPane tabs = new JTabbedPane();   // Opened files tabbed pane
+
+    private JButton btnTrans;   // transparency button
 
     private JPanel pickPanel = new JPanel();    // Colour picker container panel
     private JButton btnPickPen, btnPickFill;    // Button for picking pen/fill colour
@@ -43,6 +47,10 @@ public class VecGUI extends JFrame implements Observer {
 
     public JTabbedPane getTabs(){
         return tabs;
+    }
+
+    public JButton getTransparencyButton(){
+        return btnTrans;
     }
 
     public JMenuItem getNewFileItem(){
@@ -84,6 +92,7 @@ public class VecGUI extends JFrame implements Observer {
         addColorPalette();
         addTabs();
         addColorPicker();
+        addTransparencyToggle();
     }
 
     /**
@@ -98,7 +107,6 @@ public class VecGUI extends JFrame implements Observer {
             JButton btn = new JButton(tool.getName());
             btn.setPreferredSize(new Dimension(96, 24));
             btn.setBorderPainted(false);
-            btn.setOpaque(true);
             btn.setBackground(Utility.GREY600);
             btn.setForeground(Color.WHITE);
 
@@ -148,8 +156,8 @@ public class VecGUI extends JFrame implements Observer {
         pickPanel.add(lblPen);
         pickPanel.add(lblFill);
 
-        btnPickPen = new JButton();
-        btnPickFill = new JButton();
+        btnPickPen = new BetterJButton(false);
+        btnPickFill = new BetterJButton(false);
 
         btnPickPen.setBackground(Color.BLACK);
         btnPickPen.setBorderPainted(false);
@@ -169,6 +177,16 @@ public class VecGUI extends JFrame implements Observer {
         // Remove Tabbed pane insets
         UIManager.getInsets("TabbedPane.contentBorderInsets").set(-1,-1,-1,-1);
         add(tabs);
+    }
+
+    public void addTransparencyToggle(){
+        btnTrans = new JButton("Opaque");
+        btnTrans.setPreferredSize(new Dimension(96, 24));
+        btnTrans.setBorderPainted(false);
+        btnTrans.setBackground(Utility.GREY600);
+        btnTrans.setForeground(Color.WHITE);
+
+        toolsPanel.add(btnTrans);
     }
 
     /**
@@ -230,17 +248,22 @@ public class VecGUI extends JFrame implements Observer {
         }
 
         // Update panels
+        int selected = tabs.getSelectedIndex();
+
         tabs.removeAll();
         for(VecFile file : model.getOpenedFiles()){
             JPanel canvasPanel =  new JPanel();
             canvasPanel.setLayout(new GridBagLayout());
             canvasPanel.setBackground(Utility.GREY700);
 
-            JPanel canvas = new JPanel();
+            Canvas canvas = new Canvas(file);
             canvas.setPreferredSize(new Dimension(640, 640));
 
             canvasPanel.add(canvas);
             tabs.add(file.getFileName(), canvasPanel);
         }
+
+        int tabCount = tabs.getTabCount();
+        if(tabCount > 0 && selected < tabCount && selected >= 0) tabs.setSelectedIndex(selected);
     }
 }
