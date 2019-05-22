@@ -222,7 +222,7 @@ public class VecGUI extends JFrame implements Observer {
         ks = KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
         saveFileItem.setAccelerator(ks);
 
-        closeFileItem.setMnemonic(KeyEvent.VK_W);
+        closeFileItem.setMnemonic(KeyEvent.VK_C);
         ks = KeyStroke.getKeyStroke('W', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
         closeFileItem.setAccelerator(ks);
 
@@ -232,8 +232,17 @@ public class VecGUI extends JFrame implements Observer {
         fileMenu.add(saveFileItem);
         fileMenu.add(closeFileItem);
         fileMenu.add(closeAllFilesItem);
-
         menuBar.add(fileMenu);
+
+        // Edit menu
+        JMenu editMenu = new JMenu("Edit");
+        JMenuItem undoItem = new JMenuItem("Undo");
+        undoItem.setMnemonic(KeyEvent.VK_U);
+        ks = KeyStroke.getKeyStroke('Z', Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+        undoItem.setAccelerator(ks);
+        editMenu.add(undoItem);
+        menuBar.add(editMenu);
+
         setJMenuBar(menuBar);
     }
 

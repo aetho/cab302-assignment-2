@@ -4,17 +4,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VecFile {
     private boolean indicatingTransparency;
     private boolean isModified;
     private String filePath;
     private String fileName;
-    private String content;
+    private List<String> content;
 
 
     public VecFile(File file){
-        indicatingTransparency = false;
+        this.content = new ArrayList<>();
+        this.indicatingTransparency = false;
         this.isModified = file == null;
 
         this.filePath = (file == null) ? "untitled.vec" : file.getAbsolutePath();
@@ -56,17 +59,23 @@ public class VecFile {
     }
 
     public void addContent(String line){
-        if(content == null){
-            content = line + "\n";
-        }else{
-            content += line + "\n";
+        content.add(line);
+    }
+
+    public void removeContent(int lineIndex){
+        if(lineIndex < content.size() && content.size() > 0){
+            content.remove(lineIndex);
         }
     }
 
     public void saveFile(){
+        String strContent = "";
+        for(String line : content){
+            strContent += line + "\n";
+        }
         try {
             FileWriter writer = new FileWriter(filePath);
-            writer.write(content);
+            writer.write(strContent);
             writer.close();
         } catch (Exception e){}
     }
@@ -83,7 +92,7 @@ public class VecFile {
         return (isModified) ? fileName+"*" : fileName;
     }
 
-    public String getContent(){
+    public List<String> getContent(){
         return content;
     }
 

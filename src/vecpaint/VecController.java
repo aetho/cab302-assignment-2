@@ -22,12 +22,12 @@ public class VecController {
 
         // Add listeners
         addFileMenuListener();
+        addEditMenuListener();
         addColorListener();
         addToolListener();
         addPickPenListener();
         addPickFillListener();
         addTransparencyListener();
-        addCanvasListener();
     }
 
     public void addColorListener(){
@@ -68,15 +68,10 @@ public class VecController {
         trans.addActionListener(new TransparencyListener());
     }
 
-    public void addCanvasListener(){
-        JTabbedPane tabs = view.getTabs();
-        int selected = tabs.getSelectedIndex();
-        Canvas currentCanvas = view.getCanvases().get(selected);
-
-        // Add line listener
-        currentCanvas.addMouseListener(new CanvasLineListener());
-        currentCanvas.addMouseMotionListener(new CanvasLineListener());
-
+    public void addEditMenuListener(){
+        JMenuBar menuBar = view.getJMenuBar();
+        JMenu editMenu = menuBar.getMenu(1);
+        editMenu.getItem(0).addActionListener(new EditMenuListener());
     }
 
     private class ColorListener extends MouseAdapter {
@@ -189,7 +184,12 @@ public class VecController {
         }
     }
 
-    private class CanvasLineListener extends MouseAdapter {
-
+    private class EditMenuListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            Object obj = e.getSource();
+            if(obj instanceof JMenuItem){
+                model.undo(view.getTabs().getSelectedIndex());
+            }
+        }
     }
 }

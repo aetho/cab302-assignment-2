@@ -79,6 +79,11 @@ public class VecModel extends Subject {
         notifyObservers();
     }
 
+    public void undo(int fileIndex){
+        // [Todo] Add undo functionality
+        notifyObservers();
+    }
+
     public Color getPenColor(){
         return penColor;
     }
