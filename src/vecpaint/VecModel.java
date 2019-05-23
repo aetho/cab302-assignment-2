@@ -80,7 +80,48 @@ public class VecModel extends Subject {
     }
 
     public void undo(int fileIndex){
-        // [Todo] Add undo functionality
+        List<String> fileContent = openedFiles.get(fileIndex).getContent();
+
+        // Iterate through the content from end to beginning to find first drawing command
+        for(int i = fileContent.size()-1; i >= 0; i--){
+            String line = fileContent.get(i);
+            String cmd = line.split(" ")[0];
+
+            // Drawing operation mask used to detect if a command is a drawing command
+            String mask1 = "PLOT LINE RECTANGLE ELLIPSE POLYGON";
+            String mask2 = "OFF";
+
+            // If latest line contains "OFF" then remove it before finding the drawing command
+            if(line.contains(mask2)) {
+                fileContent.remove(i);
+                continue;
+            }
+
+            if(mask1.contains(cmd)){
+                // Remove drawing command and break out of loop
+                fileContent.remove(i);
+                break;
+            }
+        }
+
+        // Iterate through the content from end to beginning to remove color settings until the next FILL OFF or drawing
+        for(int i = fileContent.size()-1; i >= 0; i--){
+            String line = fileContent.get(i);
+            String cmd = line.split(" ")[0];
+
+            // Masks used to detect drawing commands and FILL OFF commands
+            String mask1 = "PLOT LINE RECTANGLE ELLIPSE POLYGON";
+            String mask2 = "OFF";
+
+            if(mask1.contains(cmd) || line.contains(mask2)){
+                break;
+            }else{
+                fileContent.remove(i);
+            }
+        }
+
+        openedFiles.get(fileIndex).setContent(fileContent);
+        openedFiles.get(fileIndex).setModified(true);
         notifyObservers();
     }
 

@@ -58,6 +58,10 @@ public class VecFile {
         this.fileName = fileName;
     }
 
+    public void setContent(List<String> content){
+        this.content = content;
+    }
+
     public void addContent(String line){
         content.add(line);
     }
