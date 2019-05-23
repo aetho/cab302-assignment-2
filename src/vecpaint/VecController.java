@@ -6,7 +6,6 @@ import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
-import customcomponent.Canvas;
 
 public class VecController {
     private VecModel model;

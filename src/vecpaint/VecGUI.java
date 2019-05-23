@@ -1,7 +1,8 @@
 package vecpaint;
 
-import customcomponent.BetterJButton;
-import customcomponent.Canvas;
+import custom.BetterJButton;
+import custom.Canvas;
+import custom.CanvasContainer;
 import observerpattern.*;
 
 import javax.swing.*;
@@ -269,15 +270,8 @@ public class VecGUI extends JFrame implements Observer {
         tabs.removeAll();
         canvases.clear();
         for(VecFile file : model.getOpenedFiles()){
-            JPanel canvasPanel =  new JPanel();
-            canvasPanel.setLayout(new GridBagLayout());
-            canvasPanel.setBackground(Utility.GREY700);
-
             Canvas canvas = new Canvas(file, model);
-            canvas.setPreferredSize(new Dimension(640, 640));
-
-
-            canvases.add(canvas);
+            CanvasContainer canvasPanel =  new CanvasContainer(canvas);
             canvasPanel.add(canvas);
             tabs.add(file.getFileName(), canvasPanel);
         }

@@ -1,4 +1,4 @@
-package customcomponent;
+package custom;
 
 import vecpaint.Tool;
 import vecpaint.Utility;
@@ -15,6 +15,7 @@ import java.util.List;
 public class Canvas extends JPanel {
     private VecFile file;
     private VecModel model;
+    private int h, w;
 
     private int[] tempLine = new int[4];
     private Rectangle tempRect;
@@ -31,6 +32,7 @@ public class Canvas extends JPanel {
         addRectListener();
         addEllipseListener();
         addPolyListener();
+        addRectListener();
     }
 
     private void addLineListener(){
@@ -71,7 +73,7 @@ public class Canvas extends JPanel {
 
                     int fileIndex = model.getOpenedFiles().indexOf(file);
 
-                    String line = String.format("LINE %f %f %f %f", x1/640.0, y1/640.0, x2/640.0, y2/640.0);
+                    String line = String.format("LINE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
                     model.updateFile(fileIndex, line);
@@ -96,7 +98,7 @@ public class Canvas extends JPanel {
                 Tool cTool = model.getCurrentTool();
                 if(cTool == Tool.PLOT && SwingUtilities.isLeftMouseButton(e)) {
                     Point click = e.getPoint();
-                    String line = String.format("PLOT %f %f", click.x/640.0, click.y/640.0);
+                    String line = String.format("PLOT %f %f", (double)click.x/w, (double)click.y/w);
                     int fileIndex = model.getOpenedFiles().indexOf(file);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
@@ -152,7 +154,7 @@ public class Canvas extends JPanel {
                     int x2 = Math.max(pressedPoint.x, releasedPoint.x);
                     int y2 = Math.max(pressedPoint.y, releasedPoint.y);
 
-                    String line = String.format("RECTANGLE %f %f %f %f", x1/640.0, y1/640.0, x2/640.0, y2/640.0);
+                    String line = String.format("RECTANGLE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
                     int fileIndex = model.getOpenedFiles().indexOf(file);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
@@ -203,7 +205,7 @@ public class Canvas extends JPanel {
                     int x2 = Math.max(pressedPoint.x, releasedPoint.x);
                     int y2 = Math.max(pressedPoint.y, releasedPoint.y);
 
-                    String line = String.format("ELLIPSE %f %f %f %f", x1/640.0, y1/640.0, x2/640.0, y2/640.0);
+                    String line = String.format("ELLIPSE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
                     int fileIndex = model.getOpenedFiles().indexOf(file);
                     if (model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if (model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
@@ -237,7 +239,7 @@ public class Canvas extends JPanel {
                         if(tempPoly.size() > 2){
                             String line = "POLYGON";
                             for(Point p : tempPoly){
-                                line += String.format(" %f %f", p.x/640.0, p.y/640.0);
+                                line += String.format(" %f %f",(double)p.x/w, (double)p.y/w);
                             }
                             int fileIndex = model.getOpenedFiles().indexOf(file);
                             if (model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
@@ -268,10 +270,12 @@ public class Canvas extends JPanel {
         addMouseMotionListener(polyMA);
     }
 
+
     @Override
     protected void paintComponent(Graphics g) {
-        int h = getHeight();
-        int w = getWidth();
+        h = getHeight();
+        w = getWidth();
+
 
         // Paint background
         if(file.isIndicatingTransparency()){
@@ -305,9 +309,14 @@ public class Canvas extends JPanel {
             }
         }
 
+
+        // Set pen colors to be lighter to indicate that it's a preview
+        Color prevPen = getTranslucentColor(model.getPenColor(), 64);      // Preview pen color
+        Color prevFill = getTranslucentColor(model.getFillColor(), 64);    // Preview fill color
+
         // Line preview
         if(tempLine != null){
-            g.setColor(model.getPenColor());
+            g.setColor(prevPen);
             g.drawLine(tempLine[0], tempLine[1], tempLine[2], tempLine[3]);
         }
 
@@ -315,12 +324,12 @@ public class Canvas extends JPanel {
         if(tempRect != null) {
             Graphics2D g2d = (Graphics2D) g.create();
             if(model.getFillColor() != null){
-                g2d.setColor(model.getFillColor());
+                g2d.setColor(prevFill);
                 g2d.fill(tempRect);
             }
 
             g2d = (Graphics2D) g.create();
-            g2d.setColor(model.getPenColor());
+            g2d.setColor(prevPen);
             g2d.draw(tempRect);
             g2d.dispose();
         }
@@ -330,10 +339,10 @@ public class Canvas extends JPanel {
             int eWidth = tempOval[2] - tempOval[0];
             int eHeight = tempOval[3] - tempOval[1];
             if(model.getFillColor() != null){
-                g.setColor(model.getFillColor());
+                g.setColor(prevFill);
                 g.fillOval(tempOval[0], tempOval[1], eWidth, eHeight);
             }
-            g.setColor(model.getPenColor());
+            g.setColor(prevPen);
             g.drawOval(tempOval[0], tempOval[1], eWidth, eHeight);
         }
 
@@ -342,7 +351,7 @@ public class Canvas extends JPanel {
             for(int i = 0; i < tempPoly.size() - 1; i++){
                 Point p1 = tempPoly.get(i);
                 Point p2 = tempPoly.get(i+1);
-                g.setColor(model.getPenColor());
+                g.setColor(prevPen);
                 g.drawLine(p1.x, p1.y, p2.x, p2.y);
             }
 
@@ -355,11 +364,11 @@ public class Canvas extends JPanel {
                 }
 
                 if(model.getFillColor() != null){
-                    g.setColor(model.getFillColor());
+                    g.setColor(prevFill);
                     g.fillPolygon(poly);
                 }
 
-                g.setColor(model.getPenColor());
+                g.setColor(prevPen);
                 g.drawPolygon(poly);
             }
         }
@@ -413,12 +422,23 @@ public class Canvas extends JPanel {
 
     private Integer[] vecArgsToInt(String[] strArgs, boolean scaleUp){
         Integer[] intArgs = new Integer[strArgs.length];
-        int scale = (scaleUp) ? 640 : 1;
+        int scale = (scaleUp) ? getHeight() : 1;
         for(int i = 0; i < strArgs.length; i++){
             // parsing args to integer and scaling up args
             intArgs[i] = (int)Math.round(Double.parseDouble(strArgs[i]) * scale);
         }
         return intArgs;
+    }
+
+    private Color getTranslucentColor(Color c, int alpha){
+        if (c == null) return null;
+        int r = c.getRed();
+        int g = c.getGreen();
+        int b = c.getBlue();
+
+        int a = (alpha < c.getAlpha()) ? alpha : c.getAlpha();
+
+        return new Color(r, g, b, a);
     }
 
     private void vecPlot(Graphics g, String[] strArgs, Color pen){

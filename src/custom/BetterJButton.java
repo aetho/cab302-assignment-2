@@ -1,4 +1,4 @@
-package customcomponent;
+package custom;
 
 import vecpaint.Utility;
 
