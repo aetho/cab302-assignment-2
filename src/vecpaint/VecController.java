@@ -7,10 +7,25 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
 
+/**
+ * The controller of MVC architecture
+ */
 public class VecController {
+    /**
+     * The associated model
+     */
     private VecModel model;
+
+    /**
+     * The associated view
+     */
     private VecGUI view;
 
+    /**
+     * Creates a controller with the provided model and view/gui
+     * @param model the model of MVC architecture
+     * @param gui the view of MVC architecture
+     */
     public VecController(VecModel model, VecGUI gui){
         this.model = model;
         this.view = gui;
@@ -29,31 +44,46 @@ public class VecController {
         addTransparencyListener();
     }
 
-    public void addColorListener(){
+    /**
+     * Add listeners to the color palette buttons
+     */
+    private void addColorListener(){
         Map<Color, JButton> paletteButtons = view.getPaletteButtons();
         for(Color c : paletteButtons.keySet()){
             paletteButtons.get(c).addMouseListener(new ColorListener());
         }
     }
 
-    public void addToolListener(){
+    /**
+     * Add listeners to the tool buttons
+     */
+    private void addToolListener(){
         Map<String, JButton> toolButtons = view.getToolButtons();
         for(String tool : toolButtons.keySet()){
             toolButtons.get(tool).addActionListener(new ToolListener());
         }
     }
 
-    public void addPickPenListener(){
+    /**
+     * Add listener for pen color picker
+     */
+    private void addPickPenListener(){
         JButton pickPenButton = view.getPickPenButton();
         pickPenButton.addMouseListener(new PickPenListener());
     }
 
-    public void addPickFillListener(){
+    /**
+     * Add listener for fill color picker
+     */
+    private void addPickFillListener(){
         JButton pickFillButton = view.getPickFillButton();
         pickFillButton.addMouseListener(new PickFillListener());
     }
 
-    public void addFileMenuListener(){
+    /**
+     * Add listener to file menu items
+     */
+    private void addFileMenuListener(){
         JMenuBar menuBar = view.getJMenuBar();
         JMenu fileMenu = menuBar.getMenu(0);
 
@@ -62,17 +92,26 @@ public class VecController {
         }
     }
 
-    public void addTransparencyListener(){
+    /**
+     * Add listener to the transparency indicator button
+     */
+    private void addTransparencyListener(){
         JButton trans = view.getTransparencyButton();
         trans.addActionListener(new TransparencyListener());
     }
 
-    public void addEditMenuListener(){
+    /**
+     * Add listener to edit menu item
+     */
+    private void addEditMenuListener(){
         JMenuBar menuBar = view.getJMenuBar();
         JMenu editMenu = menuBar.getMenu(1);
         editMenu.getItem(0).addActionListener(new EditMenuListener());
     }
 
+    /**
+     * Listener for palette buttons
+     */
     private class ColorListener extends MouseAdapter {
         public void mousePressed(MouseEvent e){
             Object src = e.getSource();
@@ -87,6 +126,9 @@ public class VecController {
         }
     }
 
+    /**
+     * Listener for tool buttons
+     */
     private class ToolListener implements ActionListener {
         public void actionPerformed (ActionEvent e){
             Object src = e.getSource();
@@ -98,6 +140,9 @@ public class VecController {
         }
     }
 
+    /**
+     * Listener for pen color picker
+     */
     private class PickPenListener extends MouseAdapter {
         public void mousePressed(MouseEvent e){
             Object src = e.getSource();
@@ -113,6 +158,9 @@ public class VecController {
         }
     }
 
+    /**
+     * Listener for fill color picker
+     */
     private class PickFillListener extends MouseAdapter {
         public void mousePressed(MouseEvent e){
             Object src = e.getSource();
@@ -128,6 +176,9 @@ public class VecController {
         }
     }
 
+    /**
+     * Listener for file menu items
+     */
     private class FileMenuListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Object src = e.getSource();
@@ -145,7 +196,11 @@ public class VecController {
                     int returnValue = jfc.showOpenDialog(null);
                     if(returnValue == JFileChooser.APPROVE_OPTION){
                         model.openFile(jfc.getSelectedFile());
+                        int tabCount = view.getTabs().getTabCount();
+                        view.getTabs().setSelectedIndex(tabCount-1);
                     }
+
+//                    JOptionPane.showMessageDialog(null, "TEST");
                 }else if(src == view.getSaveFileItem()){
                     JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
                     jfc.setDialogTitle("Choose save folder");
@@ -176,6 +231,9 @@ public class VecController {
         }
     }
 
+    /**
+     * Listener for transparency indicator button
+     */
     private class TransparencyListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             JTabbedPane tabs = view.getTabs();
@@ -183,6 +241,9 @@ public class VecController {
         }
     }
 
+    /**
+     * Listener for edit menu items
+     */
     private class EditMenuListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Object obj = e.getSource();

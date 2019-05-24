@@ -6,6 +6,7 @@ package observerpattern;
 public interface Observer {
     /**
      * Executed when notified.
+     * @param s the subject
      */
     void update(Subject s);
 }

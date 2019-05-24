@@ -2,6 +2,9 @@ package vecpaint;
 
 import javax.swing.*;
 
+/**
+ * Entry point to the program
+ */
 public class VecPaint {
     public static void main(String[] args){
         VecModel model = new VecModel();

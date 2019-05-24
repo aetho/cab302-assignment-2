@@ -8,79 +8,165 @@ import observerpattern.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
+/**
+ * The view of MVC Architecture
+ */
 public class VecGUI extends JFrame implements Observer {
-    private JPanel toolsPanel = new JPanel();                   // toolbar container panel
-    private Map<String, JButton> btnTools = new HashMap<>();    // Tool buttons (plot, line, etc...)
-    private Map<Color, JButton> btnPalette = new HashMap<>();   // Colour palette buttons
+    /**
+     * Container panel for tool buttons
+     */
+    private JPanel toolsPanel = new JPanel();
 
-    private JTabbedPane tabs = new JTabbedPane();       // Opened files tabbed pane
-    private List<Canvas> canvases = new ArrayList<>();   // List of canvases
+    /**
+     * Map containing String-JButton key-value pairs
+     */
+    private Map<String, JButton> btnTools = new HashMap<>();
 
-    private JButton btnTrans;   // transparency button
+    /**
+     * Map containing Color-JButton key-value pairs
+     */
+    private Map<Color, JButton> btnPalette = new HashMap<>();
 
-    private JPanel pickPanel = new JPanel();    // Colour picker container panel
-    private JButton btnPickPen, btnPickFill;    // Button for picking pen/fill colour
-    private JLabel lblPen, lblFill;             // Labels for Pen/Fill
+    /**
+     * JTabbedPane containing opened files as tabs
+     */
+    private JTabbedPane tabs = new JTabbedPane();
 
+    /**
+     * Button for toggling transparency
+     */
+    private JButton btnTrans;
+
+    /**
+     * Container panel for color picker buttons
+     */
+    private JPanel pickPanel = new JPanel();
+
+    /**
+     * Pen color picker button
+     */
+    private JButton btnPickPen;
+
+    /**
+     * Fill color picker button
+     */
+    private JButton btnPickFill;
+
+    /**
+     * New file menu item
+     */
     private JMenuItem newFileItem;
+
+    /**
+     * open file menu item
+     */
     private JMenuItem openFileItem;
+
+    /**
+     * save file menu item
+     */
     private JMenuItem saveFileItem;
+
+    /**
+     * close file menu item
+     */
     private JMenuItem closeFileItem;
+
+    /**
+     * close all file menu item
+     */
     private JMenuItem closeAllFilesItem;
 
+    /**
+     * Get tool buttons
+     * @return a Map with String-JButton key-value pairs
+     */
     public Map<String, JButton> getToolButtons(){
         return btnTools;
     }
 
+    /**
+     * Get color palette buttons
+     * @return a Map with String-JButton key-value pairs
+     */
     public Map<Color, JButton> getPaletteButtons(){
         return btnPalette;
     }
 
+    /**
+     * Get pen color picker button
+     * @return pen color picker JButton
+     */
     public JButton getPickPenButton(){
         return btnPickPen;
     }
 
+    /**
+     * Get fill color picker button
+     * @return fill color picker JButton
+     */
     public JButton getPickFillButton(){
         return btnPickFill;
     }
 
+    /**
+     * Get tabs
+     * @return the tabs JTabbedPane
+     */
     public JTabbedPane getTabs(){
         return tabs;
     }
 
-    public List<Canvas> getCanvases(){
-        return canvases;
-    }
-
+    /**
+     * Get transparency indicator button
+     * @return the "Opaque" JButton
+     */
     public JButton getTransparencyButton(){
         return btnTrans;
     }
 
+    /**
+     * Get new file menu item
+     * @return newFileItem JMenuItem
+     */
     public JMenuItem getNewFileItem(){
         return newFileItem;
     }
 
+    /**
+     * Get open file menu item
+     * @return openFileItem JMenuItem
+     */
     public JMenuItem getOpenFileItem(){
         return openFileItem;
     }
 
+    /**
+     * Get save file menu item
+     * @return saveFileItem JMenuItem
+     */
     public JMenuItem getSaveFileItem(){
         return saveFileItem;
     }
 
+    /**
+     * Get close file menu item
+     * @return closeFileItem JMenuItem
+     */
     public JMenuItem getCloseFileItem(){
         return closeFileItem;
     }
 
+    /**
+     * Get close all files menu item
+     * @return closeAllFilesItem JMenuItem
+     */
     public JMenuItem getCloseAllFilesItem(){
         return closeAllFilesItem;
     }
-
 
     /**
      * Creates the main GUI of the program
@@ -126,14 +212,14 @@ public class VecGUI extends JFrame implements Observer {
     }
 
     /**
-     * Adds colour btnPalette to toolbar
+     * Adds color btnPalette to toolbar
      */
     public void addColorPalette(){
-        JPanel palettePanel = new JPanel(); // Colour palette container
+        JPanel palettePanel = new JPanel(); // color palette container
         palettePanel.setLayout(new GridLayout(4,4));
         palettePanel.setPreferredSize(new Dimension(96,96));
 
-        // Creating and adding colour buttons to palettePanel
+        // Creating and adding color buttons to palettePanel
         for(Color c : Utility.PALETTECOLORS){
             JButton btn = new JButton();
             btn.setPreferredSize(new Dimension(24, 24));
@@ -144,21 +230,21 @@ public class VecGUI extends JFrame implements Observer {
             btnPalette.put(c, btn);
         }
 
-        // Add colour panel to toolbar
+        // Add color panel to toolbar
         toolsPanel.add(palettePanel);
     }
 
     /**
-     * Adds colour picker to toolbar
+     * Adds color picker to toolbar
      */
     public void addColorPicker(){
         pickPanel.setLayout(new GridLayout(2,2, 4, 0));
         pickPanel.setPreferredSize(new Dimension(96,48));
         pickPanel.setBackground(Utility.GREY900);
 
-        lblPen = new JLabel("Pen");
+        JLabel lblPen = new JLabel("Pen");
         lblPen.setForeground(Color.WHITE);
-        lblFill = new JLabel("Fill");
+        JLabel lblFill = new JLabel("Fill");
         lblFill.setForeground(Color.WHITE);
 
         pickPanel.add(lblPen);
@@ -187,6 +273,9 @@ public class VecGUI extends JFrame implements Observer {
         add(tabs);
     }
 
+    /**
+     * Adds the transparency toggle button
+     */
     public void addTransparencyToggle(){
         btnTrans = new JButton("Opaque");
         btnTrans.setPreferredSize(new Dimension(96, 24));
@@ -268,7 +357,6 @@ public class VecGUI extends JFrame implements Observer {
         int selected = tabs.getSelectedIndex();
 
         tabs.removeAll();
-        canvases.clear();
         for(VecFile file : model.getOpenedFiles()){
             Canvas canvas = new Canvas(file, model);
             CanvasContainer canvasPanel =  new CanvasContainer(canvas);

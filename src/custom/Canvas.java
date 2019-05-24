@@ -1,9 +1,6 @@
 package custom;
 
-import vecpaint.Tool;
-import vecpaint.Utility;
-import vecpaint.VecFile;
-import vecpaint.VecModel;
+import vecpaint.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,21 +9,61 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An extension of JPanel that allows for mouse directed painting
+ */
 public class Canvas extends JPanel {
+    /**
+     * VecFile associated to this canvas
+     */
     private VecFile file;
-    private VecModel model;
-    private int h, w;
 
+    /**
+     * Model this canvas is associated with
+     */
+    private VecModel model;
+
+    /**
+     * Height of canvas
+     */
+    private int h;
+
+    /**
+     * Width of canvas
+     */
+    private int w;
+
+    /**
+     * Temporary variable used for line preview drawing
+     */
     private int[] tempLine = new int[4];
+
+    /**
+     * Temporary variable used for rectangle preview drawing
+     */
     private Rectangle tempRect;
+
+    /**
+     * Temporary variable used for ellipse preview drawing
+     */
     private int[] tempOval = new int[4];
+
+    /**
+     * Temporary variable used for polygon preview drawing
+     */
     private List<Point> tempPoly = new ArrayList<>();
 
+    /**
+     * Creates a Canvas object
+     * @param file The file this canvas is associated to. This canvas will draw the contents in the file
+     * @param model The model that contains the VecFile of this canvas. This allows the canvas to update the file
+     */
     public Canvas(VecFile file, VecModel model){
         setOpaque(false);
         this.file = file;
         this.model = model;
 
+        // Add listeners
         addLineListener();
         addPlotListener();
         addRectListener();
@@ -35,6 +72,9 @@ public class Canvas extends JPanel {
         addRectListener();
     }
 
+    /**
+     * Adds the mouse and mouse motion listener to the canvas to allow for line drawing
+     */
     private void addLineListener(){
         MouseAdapter lineMA = new MouseAdapter(){
             private Point pressedPoint;
@@ -52,11 +92,11 @@ public class Canvas extends JPanel {
                 if(cTool == Tool.LINE && SwingUtilities.isLeftMouseButton(e)) {
                     Point draggedPoint = e.getPoint();
 
-                    tempLine[0] = pressedPoint.x;
-                    tempLine[1] = pressedPoint.y;
-
-                    tempLine[2] = draggedPoint.x;
-                    tempLine[3] = draggedPoint.y;
+                    // Set points of line preview
+                    tempLine[0] = pressedPoint.x; // X1
+                    tempLine[1] = pressedPoint.y; // Y1
+                    tempLine[2] = draggedPoint.x; // X2
+                    tempLine[3] = draggedPoint.y; // Y2
 
                     repaint();
                 }
@@ -71,13 +111,15 @@ public class Canvas extends JPanel {
                     int x2 = releasedPoint.x;
                     int y2 = releasedPoint.y;
 
-                    int fileIndex = model.getOpenedFiles().indexOf(file);
 
+                    // Update file
+                    int fileIndex = model.getOpenedFiles().indexOf(file);
                     String line = String.format("LINE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
                     model.updateFile(fileIndex, line);
 
+                    // Remove line preview
                     tempLine[0] = -1;
                     tempLine[1] = -1;
                     tempLine[2] = -1;
@@ -92,14 +134,19 @@ public class Canvas extends JPanel {
         addMouseMotionListener(lineMA);
     }
 
+    /**
+     * Adds the mouse listener to the canvas to allow for plotting (drawing dots)
+     */
     private void addPlotListener(){
         MouseAdapter plotMA = new MouseAdapter() {
             public void mousePressed(MouseEvent e){
                 Tool cTool = model.getCurrentTool();
                 if(cTool == Tool.PLOT && SwingUtilities.isLeftMouseButton(e)) {
                     Point click = e.getPoint();
-                    String line = String.format("PLOT %f %f", (double)click.x/w, (double)click.y/w);
+
+                    // Update file
                     int fileIndex = model.getOpenedFiles().indexOf(file);
+                    String line = String.format("PLOT %f %f", (double)click.x/w, (double)click.y/w);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
                     model.updateFile(fileIndex, line);
@@ -109,6 +156,9 @@ public class Canvas extends JPanel {
         addMouseListener(plotMA);
     }
 
+    /**
+     * Adds the mouse and mouse motion listener to the canvas to allow for rectangle drawing
+     */
     private void addRectListener(){
         MouseAdapter rectMA = new MouseAdapter() {
             private Point pressedPoint;
@@ -137,6 +187,7 @@ public class Canvas extends JPanel {
                     int width = x2 - x1;
                     int height = y2 - y1;
 
+                    // Create rectangle for preview and repaint canvas
                     if (tempRect == null) tempRect = new Rectangle(x1, y1, width, height);
                     else tempRect.setBounds(x1, y1, width, height);
                     repaint();
@@ -154,13 +205,15 @@ public class Canvas extends JPanel {
                     int x2 = Math.max(pressedPoint.x, releasedPoint.x);
                     int y2 = Math.max(pressedPoint.y, releasedPoint.y);
 
-                    String line = String.format("RECTANGLE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
+                    // Update file
                     int fileIndex = model.getOpenedFiles().indexOf(file);
+                    String line = String.format("RECTANGLE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
                     model.updateFile(fileIndex, line);
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL OFF");
 
+                    // Remove preview and repaint
                     tempRect = null;
                     repaint();
                 }
@@ -170,6 +223,9 @@ public class Canvas extends JPanel {
         addMouseMotionListener(rectMA);
     }
 
+    /**
+     * Adds the mouse and mouse motion listener to the canvas to allow for ellipse drawing
+     */
     private void addEllipseListener(){
         MouseAdapter ellipseMA = new MouseAdapter() {
             private Point pressedPoint;
@@ -186,11 +242,12 @@ public class Canvas extends JPanel {
                 Tool cTool = model.getCurrentTool();
                 if(cTool == Tool.ELLIPSE && SwingUtilities.isLeftMouseButton(e)) {
                     Point draggedPoint = e.getPoint();
-                    tempOval[0] = Math.min(pressedPoint.x, draggedPoint.x);
-                    tempOval[1] = Math.min(pressedPoint.y, draggedPoint.y);
 
-                    tempOval[2] = Math.max(pressedPoint.x, draggedPoint.x);
-                    tempOval[3] = Math.max(pressedPoint.y, draggedPoint.y);
+                    // Update ellipse preview coordinates
+                    tempOval[0] = Math.min(pressedPoint.x, draggedPoint.x); // X1
+                    tempOval[1] = Math.min(pressedPoint.y, draggedPoint.y); // Y1
+                    tempOval[2] = Math.max(pressedPoint.x, draggedPoint.x); // X2
+                    tempOval[3] = Math.max(pressedPoint.y, draggedPoint.y); // Y2
 
                     repaint();
                 }
@@ -205,17 +262,20 @@ public class Canvas extends JPanel {
                     int x2 = Math.max(pressedPoint.x, releasedPoint.x);
                     int y2 = Math.max(pressedPoint.y, releasedPoint.y);
 
-                    String line = String.format("ELLIPSE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
+                    // Update file
                     int fileIndex = model.getOpenedFiles().indexOf(file);
+                    String line = String.format("ELLIPSE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
                     if (model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if (model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
                     model.updateFile(fileIndex, line);
                     if (model.getFillColor() != null) model.updateFile(fileIndex, "FILL OFF");
 
+                    // Remove ellipse preview
                     tempOval[0] = -1;
                     tempOval[1] = -1;
                     tempOval[2] = -1;
                     tempOval[3] = -1;
+
                     repaint();
                 }
             }
@@ -225,6 +285,9 @@ public class Canvas extends JPanel {
         addMouseMotionListener(ellipseMA);
     }
 
+    /**
+     * Add the mouse and mouse motion listener to the canvas to allow for polygon drawing
+     */
     private void addPolyListener(){
         MouseAdapter polyMA = new MouseAdapter() {
             boolean drawing = false;
@@ -236,6 +299,7 @@ public class Canvas extends JPanel {
                         tempPoly.add(e.getPoint());
                         drawing = true;
                     }else if(SwingUtilities.isRightMouseButton(e)){
+                        // Update file if at least 3 point have been drawn
                         if(tempPoly.size() > 2){
                             String line = "POLYGON";
                             for(Point p : tempPoly){
@@ -247,6 +311,8 @@ public class Canvas extends JPanel {
                             model.updateFile(fileIndex, line);
                             if (model.getFillColor() != null) model.updateFile(fileIndex, "FILL OFF");
                         }
+
+                        // Remove preview and finish drawing
                         tempPoly.clear();
                         drawing = false;
                         repaint();
@@ -256,6 +322,8 @@ public class Canvas extends JPanel {
 
             public void mouseMoved(MouseEvent e){
                 Tool cTool = model.getCurrentTool();
+
+                // Set preview points if currently drawing
                 if(cTool == Tool.POLYGON && drawing){
                     int size = tempPoly.size();
                     Point currentPoint = e.getPoint();
@@ -271,11 +339,14 @@ public class Canvas extends JPanel {
     }
 
 
+    /**
+     * Paints the canvas
+     * @param g the Graphics object
+     */
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g)  {
         h = getHeight();
         w = getWidth();
-
 
         // Paint background
         if(file.isIndicatingTransparency()){
@@ -286,26 +357,59 @@ public class Canvas extends JPanel {
         }
 
         // Paint file
-        Color penTemp = Color.BLACK;
-        Color fillTemp = null;
+        Color penTemp = Color.BLACK;    // Temporary color use to draw file contents
+        Color fillTemp = null;          // Temporary color to use to draw file contents
+
         if(file.getContent() != null){
+            // Iterate through file content
             for(String line : file.getContent()){
+                // Split line at spaces
                 String[] lineArray = line.split(" ");
+
+                // Extract command from line
                 String cmd = lineArray[0].toUpperCase();
 
+                // Extract arguments from line
                 String[] strArgs = new String[lineArray.length-1];
                 for(int i = 0; i < lineArray.length-1; i++){
                     strArgs[i] = lineArray[i+1];
                 }
 
-                if(cmd.equals("PEN")) penTemp = vecParseColor(strArgs);
-                if(cmd.equals("FILL")) fillTemp = vecParseColor(strArgs);
-
-                if (cmd.equals("PLOT")) vecPlot(g, strArgs, penTemp);
-                else if(cmd.equals("LINE")) vecDrawLine(g, strArgs, penTemp);
-                else if(cmd.equals("RECTANGLE")) vecDrawRect(g, strArgs, penTemp, fillTemp);
-                else if(cmd.equals("ELLIPSE")) vecDrawEllipse(g, strArgs, penTemp, fillTemp);
-                else if(cmd.equals("POLYGON")) vecDrawPoly(g, strArgs, penTemp, fillTemp);
+                // Handle commands accordingly
+                try {
+                    switch (cmd) {
+                        case "PEN":
+                            penTemp = vecParseColor(strArgs);
+                            break;
+                        case "FILL":
+                            fillTemp = vecParseColor(strArgs);
+                            break;
+                        case "PLOT":
+                            vecPlot(g, strArgs, penTemp);
+                            break;
+                        case "LINE":
+                            vecDrawLine(g, strArgs, penTemp);
+                            break;
+                        case "RECTANGLE":
+                            vecDrawRect(g, strArgs, penTemp, fillTemp);
+                            break;
+                        case "ELLIPSE":
+                            vecDrawEllipse(g, strArgs, penTemp, fillTemp);
+                            break;
+                        case "POLYGON":
+                            vecDrawPoly(g, strArgs, penTemp, fillTemp);
+                            break;
+                    }
+                }catch (Exception e){
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            JOptionPane.showMessageDialog(null, e.getMessage());
+                            int idx = model.getOpenedFiles().indexOf(file);
+                            model.closeFile(idx);
+                        }
+                    });
+                }
             }
         }
 
@@ -374,8 +478,14 @@ public class Canvas extends JPanel {
         }
 
         super.paintComponent(g);
+        g.dispose();
     }
 
+    /**
+     * Draws a checker board pattern as the background
+     * @param g Graphics of this canvas
+     * @param gridSize Size of each square in the checker board pattern
+     */
     private void drawTransparencyGrid(Graphics g, int gridSize){
         int h = getHeight();
         int w = getWidth();
@@ -404,32 +514,70 @@ public class Canvas extends JPanel {
         }
     }
 
-    private Color vecParseColor(String[] args){
-        if(args.length > 2) return null; // [todo] write exception
+    /**
+     * Tries to parse a string array to a Color object. Will throw exception if string array cannot be parsed.
+     * @param args String array with hexadecimal values. E.g. ["#000000", "#FF"]
+     * @return Parsed color
+     * @throws Exception Thrown when Color.decode() or Integer.decode() fails
+     */
+    private Color vecParseColor(String[] args) throws Exception  {
+        Exception e = new Exception("Invalid color format, please check the file. Correct example: \"PEN #000000\" ");
+        if(args.length > 2) throw e;
         if(args[0].toUpperCase().equals("OFF")) return null;
-        Color c = Color.decode(args[0]);
+
+        Color c;
+
+        try{
+            c = Color.decode(args[0]);
+        }catch (Exception ex){
+            throw e;
+        }
+
         int r = c.getRed();
         int g = c.getGreen();
         int b = c.getBlue();
         int a;
+
         if(args.length > 1){
-            a = Integer.decode("#"+args[1]);
+            try{
+                a = Integer.decode("#"+args[1]);
+            }catch (Exception ex){
+                throw e;
+            }
             return new Color(r,g,b,a);
         }else {
             return new Color(r,g,b);
         }
     }
 
-    private Integer[] vecArgsToInt(String[] strArgs, boolean scaleUp){
+
+    /**
+     * Tries to parse a String[] to an Integer[]. Will throw exception if String[] cannot be parsed.
+     * @param strArgs String array of doubles. E.g. ["0.1", "1.0", "0.7",...]
+     * @param scaleUp Specifies whether the parsed integers should be scaled up to the canvas size
+     * @return Integer array containing parsed Integers
+     * @throws Exception Thrown when Double.parseDouble() fails
+     */
+    private Integer[] vecArgsToInt(String[] strArgs, boolean scaleUp) throws Exception{
         Integer[] intArgs = new Integer[strArgs.length];
         int scale = (scaleUp) ? getHeight() : 1;
         for(int i = 0; i < strArgs.length; i++){
             // parsing args to integer and scaling up args
-            intArgs[i] = (int)Math.round(Double.parseDouble(strArgs[i]) * scale);
+            try {
+                intArgs[i] = (int)Math.round(Double.parseDouble(strArgs[i]) * scale);
+            }catch (Exception e){
+                throw new Exception("Unable to parse arguments. Please check file.");
+            }
         }
         return intArgs;
     }
 
+    /**
+     * Gets a translucent version of the color specified
+     * @param c Original color
+     * @param alpha The desired alpha of the original color
+     * @return The original color with the specified alpha
+     */
     private Color getTranslucentColor(Color c, int alpha){
         if (c == null) return null;
         int r = c.getRed();
@@ -441,70 +589,118 @@ public class Canvas extends JPanel {
         return new Color(r, g, b, a);
     }
 
-    private void vecPlot(Graphics g, String[] strArgs, Color pen){
-        g.setColor(pen);
-        Integer[] intArgs = vecArgsToInt(strArgs, true);
-        g.drawLine(intArgs[0], intArgs[1], intArgs[0], intArgs[1]);
+    /**
+     * Draws a dot in the specified Color at the specified location
+     * @param g Graphics of this canvas
+     * @param strArgs location. E.g. ["0.5","0.5"]
+     * @param pen Pen color
+     * @throws Exception Thrown when vecArgsToInt() fails
+     */
+    private void vecPlot(Graphics g, String[] strArgs, Color pen) throws Exception {
+        try {
+            g.setColor(pen);
+            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            g.drawLine(intArgs[0], intArgs[1], intArgs[0], intArgs[1]);
+        }catch (Exception e){throw e;}
     }
 
-    private void vecDrawLine(Graphics g, String[] strArgs, Color pen){
-        g.setColor(pen);
-        Integer[] intArgs = vecArgsToInt(strArgs, true);
-        g.drawLine(intArgs[0], intArgs[1], intArgs[2], intArgs[3]);
+    /**
+     * Draws a line in the specified Color at the specified location
+     * @param g Graphics of this canvas
+     * @param strArgs location. E.g. ["0.2","0.2","0.8","0.8"]
+     * @param pen Pen color
+     * @throws Exception Thrown when vecArgsToInt() fails
+     */
+    private void vecDrawLine(Graphics g, String[] strArgs, Color pen) throws Exception {
+        try{
+            g.setColor(pen);
+            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            g.drawLine(intArgs[0], intArgs[1], intArgs[2], intArgs[3]);
+        }catch (Exception e){throw e;}
     }
 
-    private void vecDrawRect(Graphics g, String[] strArgs, Color pen, Color fill){
-        Integer[] intArgs = vecArgsToInt(strArgs, true);
-        int x1 = intArgs[0];
-        int y1 = intArgs[1];
-        int x2 = intArgs[2];
-        int y2 = intArgs[3];
-        int w = x2 - x1;
-        int h = y2 - y1;
+    /**
+     * Draws a rectangle at the specified location with the specified pen and fill color
+     * @param g Graphics of this canvas
+     * @param strArgs location. E.g. ["0.2","0.2","0.8","0.8"]
+     * @param pen Pen color
+     * @param fill Fill color
+     * @throws Exception Thrown when vecArgsToInt() fails
+     */
+    private void vecDrawRect(Graphics g, String[] strArgs, Color pen, Color fill) throws Exception {
+        try{
+            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            int x1 = intArgs[0];
+            int y1 = intArgs[1];
+            int x2 = intArgs[2];
+            int y2 = intArgs[3];
+            int w = x2 - x1;
+            int h = y2 - y1;
 
-        if(fill != null){
-            g.setColor(fill);
-            g.fillRect(x1, y1, w, h);
-        }
+            if(fill != null){
+                g.setColor(fill);
+                g.fillRect(x1, y1, w, h);
+            }
 
-        g.setColor(pen);
-        g.drawRect(x1, y1, w, h);
+            g.setColor(pen);
+            g.drawRect(x1, y1, w, h);
+        }catch (Exception e){throw e;}
     }
 
-    private void vecDrawEllipse(Graphics g, String[] strArgs, Color pen, Color fill){
-        Integer[] intArgs = vecArgsToInt(strArgs, true);
-        int x1 = intArgs[0];
-        int y1 = intArgs[1];
-        int x2 = intArgs[2];
-        int y2 = intArgs[3];
-        int w = x2 - x1;
-        int h = y2 - y1;
+    /**
+     * Draws a ellipse at the specified location with the specified pen and fill color
+     * @param g Graphics of this canvas
+     * @param strArgs location. E.g. ["0.2","0.2","0.8","0.8"]
+     * @param pen Pen color
+     * @param fill Fill color
+     * @throws Exception Thrown when vecArgsToInt() fails
+     */
+    private void vecDrawEllipse(Graphics g, String[] strArgs, Color pen, Color fill) throws  Exception{
+        try{
+            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            int x1 = intArgs[0];
+            int y1 = intArgs[1];
+            int x2 = intArgs[2];
+            int y2 = intArgs[3];
+            int w = x2 - x1;
+            int h = y2 - y1;
 
-        if(fill != null){
-            g.setColor(fill);
-            g.fillOval(x1, y1, w, h);
-        }
+            if(fill != null){
+                g.setColor(fill);
+                g.fillOval(x1, y1, w, h);
+            }
 
-        g.setColor(pen);
-        g.drawOval(x1, y1, w, h);
+            g.setColor(pen);
+            g.drawOval(x1, y1, w, h);
+        }catch (Exception e){throw e;}
     }
 
-    private void vecDrawPoly(Graphics g, String[] strArgs, Color pen, Color fill){
-        Integer[] intArgs = vecArgsToInt(strArgs, true);
-        int[] x = {intArgs[0]};
-        int[] y = {intArgs[1]};
+    /**
+     * Draws a polygon at the specified locations with the specified pen and fill color
+     * @param g Graphics of this canvas
+     * @param strArgs location. E.g. ["0.2", "0.2", "0.8", "0.2", "0.8", "0.8"]
+     * @param pen Pen color
+     * @param fill Fill color
+     * @throws Exception Thrown when vecArgsToInt() fails
+     */
+    private void vecDrawPoly(Graphics g, String[] strArgs, Color pen, Color fill) throws Exception{
+        try{
+            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            int[] x = {intArgs[0]};
+            int[] y = {intArgs[1]};
 
-        Polygon poly = new Polygon(x, y, 0);
-        for(int i = 0; i < intArgs.length/2; i++){
-            poly.addPoint(intArgs[i*2], intArgs[i*2+1]);
-        }
+            Polygon poly = new Polygon(x, y, 0);
+            for(int i = 0; i < intArgs.length/2; i++){
+                poly.addPoint(intArgs[i*2], intArgs[i*2+1]);
+            }
 
-        if(fill != null){
-            g.setColor(fill);
-            g.fillPolygon(poly);
-        }
+            if(fill != null){
+                g.setColor(fill);
+                g.fillPolygon(poly);
+            }
 
-        g.setColor(pen);
-        g.drawPolygon(poly);
+            g.setColor(pen);
+            g.drawPolygon(poly);
+        }catch (Exception e){throw e;}
     }
 }

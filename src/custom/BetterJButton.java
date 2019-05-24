@@ -10,15 +10,20 @@ import java.awt.*;
  */
 public class BetterJButton extends JButton {
 
+    /**
+     * Makes a BetterJButton
+     * @param opaque Specifies whether the button will have a translucent background.
+     */
     public BetterJButton(boolean opaque){
         setOpaque(opaque);
     }
 
+    /**
+     * Paints the BetterJButton at the specified color respecting transparency
+     */
     @Override
     protected void paintComponent(Graphics g){
         if(!isOpaque()){
-            int h = getHeight();
-            int w = getWidth();
             Color bg = getBackground();
 
             drawTransparencyGrid(g, 4);
@@ -29,6 +34,11 @@ public class BetterJButton extends JButton {
         super.paintComponent(g);
     }
 
+    /**
+     * Draws a checker board pattern as the background
+     * @param g Graphics of this button
+     * @param gridSize Size of each square in the checker board pattern
+     */
     private void drawTransparencyGrid(Graphics g, int gridSize){
         int h = getHeight();
         int w = getWidth();
