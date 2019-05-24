@@ -143,7 +143,7 @@ public class VecModel extends Subject {
         return fillColor;
     }
     public String getFillColorHexStr() {
-        if(penColor == null) return null;
+        if(fillColor == null) return null;
 
         int r = fillColor.getRed();
         int g = fillColor.getGreen();

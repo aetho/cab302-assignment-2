@@ -40,10 +40,6 @@ public class VecFile {
         indicatingTransparency = indicateTransparency;
     }
 
-    public boolean isIndicatingTransparency(){
-        return indicatingTransparency;
-    }
-
     public void setModified(boolean isModified){
         this.isModified = isModified;
     }
@@ -66,12 +62,6 @@ public class VecFile {
         content.add(line);
     }
 
-    public void removeContent(int lineIndex){
-        if(lineIndex < content.size() && content.size() > 0){
-            content.remove(lineIndex);
-        }
-    }
-
     public void saveFile(){
         String strContent = "";
         for(String line : content){
@@ -82,6 +72,10 @@ public class VecFile {
             writer.write(strContent);
             writer.close();
         } catch (Exception e){}
+    }
+
+    public boolean isIndicatingTransparency(){
+        return indicatingTransparency;
     }
 
     public boolean getModified(){
