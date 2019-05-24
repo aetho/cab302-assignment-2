@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Subject class for the Observer-Subject pattern
  */
-public class Subject {
+public abstract class Subject {
     /**
      * List of observers
      */

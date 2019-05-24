@@ -64,12 +64,11 @@ public class Canvas extends JPanel {
         this.model = model;
 
         // Add listeners
-        addLineListener();
         addPlotListener();
+        addLineListener();
         addRectListener();
         addEllipseListener();
         addPolyListener();
-        addRectListener();
     }
 
     /**
@@ -206,8 +205,8 @@ public class Canvas extends JPanel {
                     int y2 = Math.max(pressedPoint.y, releasedPoint.y);
 
                     // Update file
-                    int fileIndex = model.getOpenedFiles().indexOf(file);
                     String line = String.format("RECTANGLE %f %f %f %f", (double)x1/w, (double)y1/w, (double)x2/w, (double)y2/w);
+                    int fileIndex = model.getOpenedFiles().indexOf(file);
                     if(model.getPenColor() != null) model.updateFile(fileIndex, "PEN " + model.getPenColorHexStr());
                     if(model.getFillColor() != null) model.updateFile(fileIndex, "FILL " + model.getFillColorHexStr());
                     model.updateFile(fileIndex, line);
