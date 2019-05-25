@@ -349,7 +349,7 @@ public class Canvas extends JPanel {
 
         // Paint background
         if(file.isIndicatingTransparency()){
-            drawTransparencyGrid(g,8);
+            Utility.drawTransparencyGrid(g, w, h,8);
         }else{
             g.setColor(Color.WHITE);
             g.fillRect(0,0, w, h);
@@ -378,10 +378,10 @@ public class Canvas extends JPanel {
                 try {
                     switch (cmd) {
                         case "PEN":
-                            penTemp = vecParseColor(strArgs);
+                            penTemp = Utility.vecParseColor(strArgs);
                             break;
                         case "FILL":
-                            fillTemp = vecParseColor(strArgs);
+                            fillTemp = Utility.vecParseColor(strArgs);
                             break;
                         case "PLOT":
                             vecPlot(g, strArgs, penTemp);
@@ -414,8 +414,8 @@ public class Canvas extends JPanel {
 
 
         // Set pen colors to be lighter to indicate that it's a preview
-        Color prevPen = getTranslucentColor(model.getPenColor(), 64);      // Preview pen color
-        Color prevFill = getTranslucentColor(model.getFillColor(), 64);    // Preview fill color
+        Color prevPen = Utility.getTranslucentColor(model.getPenColor(), 64);      // Preview pen color
+        Color prevFill = Utility.getTranslucentColor(model.getFillColor(), 64);    // Preview fill color
 
         // Line preview
         if(tempLine != null){
@@ -481,124 +481,16 @@ public class Canvas extends JPanel {
     }
 
     /**
-     * Draws a checker board pattern as the background
-     * @param g Graphics of this canvas
-     * @param gridSize Size of each square in the checker board pattern
-     */
-    private void drawTransparencyGrid(Graphics g, int gridSize){
-        int h = getHeight();
-        int w = getWidth();
-        int bigger = (h <= w) ? w : h;
-        int numSquares = (int)Math.ceil(bigger/gridSize);
-
-        for(int i = 0; i < numSquares; i++){
-            for(int j = 0; j < numSquares; j++){
-                if(numSquares % 2 == 1){
-                    if((i*numSquares + j) % 2 == 0){
-                        g.setColor(Utility.GREY600);
-                    }else {
-                        g.setColor(Color.WHITE);
-                    }
-                }else{
-                    if(i % 2 == 0){
-                        if((i*numSquares + j) % 2 == 0) g.setColor(Color.WHITE);
-                        else g.setColor(Utility.GREY600);
-                    }else{
-                        if((i*numSquares + j + 1) % 2 == 0) g.setColor(Color.WHITE);
-                        else g.setColor(Utility.GREY600);
-                    }
-                }
-                g.fillRect(j*gridSize, i*gridSize, gridSize, gridSize);
-            }
-        }
-    }
-
-    /**
-     * Tries to parse a string array to a Color object. Will throw exception if string array cannot be parsed.
-     * @param args String array with hexadecimal values. E.g. ["#000000", "#FF"]
-     * @return Parsed color
-     * @throws Exception Thrown when Color.decode() or Integer.decode() fails
-     */
-    private Color vecParseColor(String[] args) throws Exception  {
-        Exception e = new Exception("Invalid color format, please check the file. Correct example: \"PEN #000000\" ");
-        if(args.length > 2) throw e;
-        if(args[0].toUpperCase().equals("OFF")) return null;
-
-        Color c;
-
-        try{
-            c = Color.decode(args[0]);
-        }catch (Exception ex){
-            throw e;
-        }
-
-        int r = c.getRed();
-        int g = c.getGreen();
-        int b = c.getBlue();
-        int a;
-
-        if(args.length > 1){
-            try{
-                a = Integer.decode("#"+args[1]);
-            }catch (Exception ex){
-                throw e;
-            }
-            return new Color(r,g,b,a);
-        }else {
-            return new Color(r,g,b);
-        }
-    }
-
-
-    /**
-     * Tries to parse a String[] to an Integer[]. Will throw exception if String[] cannot be parsed.
-     * @param strArgs String array of doubles. E.g. ["0.1", "1.0", "0.7",...]
-     * @param scaleUp Specifies whether the parsed integers should be scaled up to the canvas size
-     * @return Integer array containing parsed Integers
-     * @throws Exception Thrown when Double.parseDouble() fails
-     */
-    private Integer[] vecArgsToInt(String[] strArgs, boolean scaleUp) throws Exception{
-        Integer[] intArgs = new Integer[strArgs.length];
-        int scale = (scaleUp) ? getHeight() : 1;
-        for(int i = 0; i < strArgs.length; i++){
-            // parsing args to integer and scaling up args
-            try {
-                intArgs[i] = (int)Math.round(Double.parseDouble(strArgs[i]) * scale);
-            }catch (Exception e){
-                throw new Exception("Unable to parse arguments. Please check file.");
-            }
-        }
-        return intArgs;
-    }
-
-    /**
-     * Gets a translucent version of the color specified
-     * @param c Original color
-     * @param alpha The desired alpha of the original color
-     * @return The original color with the specified alpha
-     */
-    private Color getTranslucentColor(Color c, int alpha){
-        if (c == null) return null;
-        int r = c.getRed();
-        int g = c.getGreen();
-        int b = c.getBlue();
-
-        int a = (alpha < c.getAlpha()) ? alpha : c.getAlpha();
-
-        return new Color(r, g, b, a);
-    }
-
-    /**
      * Draws a dot in the specified Color at the specified location
      * @param g Graphics of this canvas
      * @param strArgs location. E.g. ["0.5","0.5"]
      * @param pen Pen color
-     * @throws Exception Thrown when vecArgsToInt() fails
+     * @throws Exception Thrown when Utility.vecArgsToInt() fails
      */
     private void vecPlot(Graphics g, String[] strArgs, Color pen) throws Exception {
         try {
             g.setColor(pen);
-            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            Integer[] intArgs = Utility.vecArgsToInt(strArgs, getHeight());
             g.drawLine(intArgs[0], intArgs[1], intArgs[0], intArgs[1]);
         }catch (Exception e){throw e;}
     }
@@ -608,12 +500,12 @@ public class Canvas extends JPanel {
      * @param g Graphics of this canvas
      * @param strArgs location. E.g. ["0.2","0.2","0.8","0.8"]
      * @param pen Pen color
-     * @throws Exception Thrown when vecArgsToInt() fails
+     * @throws Exception Thrown when Utility.vecArgsToInt() fails
      */
     private void vecDrawLine(Graphics g, String[] strArgs, Color pen) throws Exception {
         try{
             g.setColor(pen);
-            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            Integer[] intArgs = Utility.vecArgsToInt(strArgs, getHeight());
             g.drawLine(intArgs[0], intArgs[1], intArgs[2], intArgs[3]);
         }catch (Exception e){throw e;}
     }
@@ -624,11 +516,11 @@ public class Canvas extends JPanel {
      * @param strArgs location. E.g. ["0.2","0.2","0.8","0.8"]
      * @param pen Pen color
      * @param fill Fill color
-     * @throws Exception Thrown when vecArgsToInt() fails
+     * @throws Exception Thrown when Utility.vecArgsToInt() fails
      */
     private void vecDrawRect(Graphics g, String[] strArgs, Color pen, Color fill) throws Exception {
         try{
-            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            Integer[] intArgs = Utility.vecArgsToInt(strArgs, getHeight());
             int x1 = intArgs[0];
             int y1 = intArgs[1];
             int x2 = intArgs[2];
@@ -652,11 +544,11 @@ public class Canvas extends JPanel {
      * @param strArgs location. E.g. ["0.2","0.2","0.8","0.8"]
      * @param pen Pen color
      * @param fill Fill color
-     * @throws Exception Thrown when vecArgsToInt() fails
+     * @throws Exception Thrown when Utility.vecArgsToInt() fails
      */
     private void vecDrawEllipse(Graphics g, String[] strArgs, Color pen, Color fill) throws  Exception{
         try{
-            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            Integer[] intArgs = Utility.vecArgsToInt(strArgs, getHeight());
             int x1 = intArgs[0];
             int y1 = intArgs[1];
             int x2 = intArgs[2];
@@ -680,11 +572,11 @@ public class Canvas extends JPanel {
      * @param strArgs location. E.g. ["0.2", "0.2", "0.8", "0.2", "0.8", "0.8"]
      * @param pen Pen color
      * @param fill Fill color
-     * @throws Exception Thrown when vecArgsToInt() fails
+     * @throws Exception Thrown when Utility.vecArgsToInt() fails
      */
     private void vecDrawPoly(Graphics g, String[] strArgs, Color pen, Color fill) throws Exception{
         try{
-            Integer[] intArgs = vecArgsToInt(strArgs, true);
+            Integer[] intArgs = Utility.vecArgsToInt(strArgs, getHeight());
             int[] x = {intArgs[0]};
             int[] y = {intArgs[1]};
 

@@ -1,7 +1,5 @@
 package custom;
 
-import vecpaint.Utility;
-
 import javax.swing.*;
 import java.awt.*;
 

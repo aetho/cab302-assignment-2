@@ -1,5 +1,10 @@
 package vecpaint;
 import static org.junit.jupiter.api.Assertions.*;
+
+import custom.Canvas;
+import custom.CanvasContainer;
+import custom.Tool;
+import custom.Utility;
 import org.junit.jupiter.api.*;
 
 import java.awt.*;
@@ -33,6 +38,76 @@ public class Tests {
             System.out.println(e.getMessage());
         }
     }
+
+    // ------------------------------- Start testing Utility class ------------------------------- //
+    @Test
+    public void testUtilityTranslucent(){
+        Color c1 = new Color(63,127,255);
+        Color ca1 = Utility.getTranslucentColor(c1, 128);
+        assertEquals(63, ca1.getRed());
+        assertEquals(127, ca1.getGreen());
+        assertEquals(255, ca1.getBlue());
+        assertEquals(128, ca1.getAlpha());
+
+        Color c2 = new Color(63,127,255,32);
+        Color ca2 = Utility.getTranslucentColor(c2, 64);
+        assertEquals(63, ca2.getRed());
+        assertEquals(127, ca2.getGreen());
+        assertEquals(255, ca2.getBlue());
+        assertEquals(32, ca2.getAlpha());
+    }
+
+    @Test
+    public void testVecParseColor() throws Exception{
+        String[] hexStr = {"#00FF00", "FF"};
+        Color c = Utility.vecParseColor(hexStr);
+        assertEquals(0, c.getRed());
+        assertEquals(255, c.getGreen());
+        assertEquals(0, c.getBlue());
+        assertEquals(255, c.getAlpha());
+
+        String[] hexStr2 = {"#00GG00", "FF"};
+        Exception thrown = assertThrows(Exception.class, ()->{
+            Color a = Utility.vecParseColor(hexStr2);
+        });
+        assertEquals("Invalid color format, please check the file. Correct example: \"PEN #000000\" ", thrown.getMessage());
+    }
+
+    @Test
+    public void testVecArgsToInt() throws Exception{
+        String[] str = {"1.0", "0.5", "1.0"};
+        Integer[] integers = Utility.vecArgsToInt(str, 10);
+        assertArrayEquals(new Integer[]{10, 5, 10}, integers);
+
+        String[] str2 = new String[]{"1.0", "wrong", "#352837"};
+        Exception thrown = assertThrows(Exception.class, ()->{
+            Integer[] integers2 = Utility.vecArgsToInt(str2, 10);
+        });
+
+        assertEquals("Unable to parse arguments. Please check file.", thrown.getMessage());
+    }
+    // ------------------------------- End testing Utility class ------------------------------- //
+
+
+    // ------------------------------- Start testing Canvas class ------------------------------- //
+    @Test
+    public void testCanvasConstruction(){
+        Canvas c = new Canvas(null, model);
+        assertNotNull(c);
+    }
+    // ------------------------------- End testing Canvas class ------------------------------- //
+
+
+    // ------------------------------- Start testing Canvas container class ------------------------------- //
+    @Test
+    public void testCanvasContainerConstruction(){
+        Canvas c = new Canvas(null, model);
+        assertNotNull(c);
+        CanvasContainer cc = new CanvasContainer(c);
+        assertNotNull(cc);
+    }
+    // ------------------------------- End testing Canvas container class ------------------------------- //
+
 
     // ------------------------------- Start testing VecFile class ------------------------------- //
     @Test

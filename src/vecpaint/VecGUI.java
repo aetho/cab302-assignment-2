@@ -1,8 +1,7 @@
 package vecpaint;
 
-import custom.BetterJButton;
+import custom.*;
 import custom.Canvas;
-import custom.CanvasContainer;
 import observerpattern.*;
 
 import javax.swing.*;

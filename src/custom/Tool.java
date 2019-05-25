@@ -1,4 +1,4 @@
-package vecpaint;
+package custom;
 
 /**
  * Tools enum
@@ -25,6 +25,9 @@ public enum Tool {
      */
     POLYGON("Polygon");
 
+    /**
+     * Name of tool
+     */
     private String name;
 
     /**

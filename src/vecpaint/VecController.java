@@ -1,5 +1,7 @@
 package vecpaint;
 
+import custom.Tool;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;

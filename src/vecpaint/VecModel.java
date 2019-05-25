@@ -1,5 +1,6 @@
 package vecpaint;
 
+import custom.Tool;
 import observerpattern.Subject;
 
 import java.awt.*;
